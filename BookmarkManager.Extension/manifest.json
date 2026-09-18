@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "BookmarkManager Capture",
+  "version": "1.2",
+  "description": "Dynamic multi-user authenticated capture token bridge.",
+  "permissions": [
+    "activeTab",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://localhost:7215/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "MacCtrl+Shift+Y"
+      },
+      "description": "Instantly open the capture vault window."
+    }
+  }
+}

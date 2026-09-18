@@ -1,0 +1,141 @@
+﻿@page "/dashboard/register"
+@using BookmarkManager.Server
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject AuthService SecurityEngine
+@inject NavigationManager Router
+@inject ProtectedLocalStorage SessionVault
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Create Secure Vault Profile</PageTitle>
+
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow border-0 rounded-3 p-4 border-top border-success border-5 position-relative">
+        
+        <!-- ❌ THE ABSOLUTE CLOSE BUTTON NODE -->
+        <button type="button"
+                class="btn-close position-absolute top-0 end-0 m-3 shadow-none"
+                aria-label="Close"
+                @onclick='() => Router.NavigateTo("dashboard")'
+                title="Exit to Dashboard"></button>
+
+        <div class="text-center mb-4 mt-2">
+            <h3 class="fw-bold text-success m-0">📝 Profile Registration</h3>
+            <p class="text-muted small">Initialize your private encrypted storage locker keys</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="alert @(isError ? "alert-danger" : "alert-success") small rounded-3" role="alert">
+                @statusMessage
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Choose Username</label>
+            <input type="text" class="form-control rounded-pill px-3" @bind="inputUsername" placeholder="Enter username..." />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Secure Master Password</label>
+            <input type="password" class="form-control rounded-pill px-3" @bind="inputPassword" placeholder="Create password..." />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label small fw-semibold text-muted">Chrome Extension 4-Digit PIN</label>
+            <input type="password" class="form-control rounded-pill px-3 text-center fw-bold" maxlength="4" @bind="inputExtensionPin" placeholder="1234" />
+            <div class="form-text small text-muted extra-small">This PIN code verifies your capture tool actions instantly inside Chrome.</div>
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <button class="btn btn-success rounded-pill fw-semibold" @onclick="HandleRegistration">
+                Create Secure Account
+            </button>
+            <!-- Updated: Grants dynamic permission clearance to let them transition back into login cleanly -->
+            <button class="btn btn-link btn-sm text-decoration-none text-muted" @onclick="NavigateToLoginWithClearance">
+                Already have an account? Sign In
+            </button>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private string inputUsername = string.Empty;
+    private string inputPassword = string.Empty;
+    private string inputExtensionPin = string.Empty;
+    private string statusMessage = string.Empty;
+    private bool isError = false;
+
+    // 🛡️ RE-ROUTE GUARD: Protects your account registration schemas from manual URL injections
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var clearance = await SessionVault.GetAsync<string>("ButtonNavigationClearance");
+
+                if (!clearance.Success || clearance.Value != "Allowed")
+                {
+                    Router.NavigateTo("dashboard");
+                    return;
+                }
+
+                // Wipes the verification pass code token so it can never be extracted or reused
+                await SessionVault.DeleteAsync("ButtonNavigationClearance");
+
+                var allCookies = await JSRuntime.InvokeAsync<string>("eval", "document.cookie");
+                var match = System.Text.RegularExpressions.Regex.Match(allCookies, @"VaultSession=([^;]+)");
+                if (match.Success && !string.IsNullOrEmpty(match.Groups[1].Value))
+                {
+                    Router.NavigateTo("dashboard");
+                }
+
+            }
+            catch (Exception)
+            {
+                Router.NavigateTo("dashboard");
+            }
+        }
+    }
+
+    private async Task HandleRegistration()
+    {
+        statusMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(inputUsername) || string.IsNullOrWhiteSpace(inputPassword) || string.IsNullOrWhiteSpace(inputExtensionPin))
+        {
+            isError = true;
+            statusMessage = "Please complete all structural validation blocks.";
+            return;
+        }
+
+        bool wasCreated = await SecurityEngine.RegisterUserAsync(inputUsername, inputPassword, inputExtensionPin);
+
+        if (wasCreated)
+        {
+            isError = false;
+            statusMessage = "Account created successfully! Routing back to login card...";
+
+            // Re-grant the permission token for 1.2 seconds so they can transition into the login screen cleanly!
+            await SessionVault.SetAsync("ButtonNavigationClearance", "Allowed");
+
+            await Task.Delay(1200);
+            Router.NavigateTo("dashboard/login");
+        }
+        else
+        {
+            isError = true;
+            statusMessage = "Username is already occupied inside database rows.";
+        }
+    }
+
+    private async Task NavigateToLoginWithClearance()
+    {
+        // Re-grant the temporary navigation pass code token so Login.razor lets them back in!
+        await SessionVault.SetAsync("ButtonNavigationClearance", "Allowed");
+        Router.NavigateTo("dashboard/login");
+    }
+
+}
+

@@ -1,0 +1,763 @@
+﻿@page "/portfolio/bookmarks-vault/sandbox"
+
+@using BookmarkManager.Shared
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ApplicationDbContext DbContext
+@inject AuthService SecurityEngine
+@inject NavigationManager Router
+@inject ProtectedLocalStorage SessionVault
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<PageTitle>My Secure Bookmarks Vault</PageTitle>
+
+<div class="container mt-4 mb-5">
+    <!-- Administrative Header Control Panel Row -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold m-0 text-primary">📚 My Bookmarks Vault</h2>
+            <p class="text-muted small m-0">Dynamic Hierarchical Workspace Filesystem</p>
+        </div>
+        @if (loggedInUser == "Guest")
+        {
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm animate-pulse">
+                    ⚠️ Unauthenticated Guest View
+                </span>
+                <!-- Secure Trigger: Uses a custom encrypted session key to permit the next route view load -->
+                <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold shadow-sm" @onclick="NavigateToLoginViaButton">
+                    🔑 Sign In
+                </button>
+            </div>
+        }
+        else
+        {
+            // 🔒 SECURE VAULT DISPLAY: Shows the logged-in user and provides a logout button
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm d-flex align-items-center gap-1">
+                    <span class="spinner-grow spinner-grow-sm text-white" role="status" style="animation-duration: 2s;"></span>
+                    🔒 Secured Vault: <strong class="ms-1 text-white text-uppercase">@loggedInUser</strong>
+                </span>
+                <button class="btn btn-danger btn-sm rounded-pill px-3 fw-semibold shadow-sm" @onclick="HandleLogOut">
+                    👋 Log Out
+                </button>
+            </div>
+        }
+    </div>
+
+    @if (loggedInUser == "Guest")
+    {
+        <!-- 🔒 TOTAL GUEST BLACKOUT DISPLAY FRAME -->
+        <div class="text-center my-5 text-muted p-5 bg-light rounded-3 border border-dashed shadow-sm">
+            <h4 class="fw-bold text-danger mb-2">Vault Access Restricted</h4>
+            <p class="small text-muted m-0 max-width-500 mx-auto">You are currently viewing this node as an unauthenticated guest. Directories, personal bookmark grids, custom category configurations, and the real-time social chat network are completely disabled. Please utilize the Sign In button above to unlock your secure sandbox storage locker.</p>
+        </div>
+    }
+    else
+    {
+        <!-- 🔓 AUTHENTICATED REAL USER VIEW INTERFACE ONLY -->
+        <!-- 🚀 ADDED: STEAM-STYLE FILTER TOGGLE SWITCH RIGHT HERE -->
+        <div class="card p-3 mb-4 border-0 shadow-sm bg-white rounded-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="form-check form-switch m-0 d-flex align-items-center">
+                    <input class="form-check-input" type="checkbox" id="steamHideSwitch" @bind="showDislikedBookmarks" @bind:after="RefreshActiveFolderDisplay" />
+                    <label class="form-check-label small fw-semibold text-muted ms-2" for="steamHideSwitch">
+                        👁️ Show hidden "Disliked" items (Steam-style filter)
+                    </label>
+                </div>
+                <div class="small text-muted fw-bold">
+                    Filter Mode: <span class="@(showDislikedBookmarks ? "text-warning" : "text-success")">@(showDislikedBookmarks ? "Displaying All Content" : "Auto-Hiding Disliked links")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- 📁 SIDEBAR COLUMN: RECURSIVE FOLDER TREE -->
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm border-0 rounded-3 p-4 bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-secondary m-0">📁 Directories</h5>
+                        <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold" @onclick="() => PromptCreateFolder(null)">
+                            ➕ Add Main
+                        </button>
+                    </div>
+
+                    <div class="folder-tree-stream" style="max-height: 500px; overflow-y: auto;">
+                        @if (rootFolders == null || !rootFolders.Any())
+                        {
+                            <p class="text-muted small text-center my-4">No directories found. Click "Add Main" to initialize your workspace layout tree!</p>
+                        }
+                        else
+                        {
+                            @foreach (var folder in rootFolders)
+                            {
+                                @RenderFolderNode(folder, 0)
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📖 MAIN PANEL COLUMN: SELECTED FOLDER CARDS GRID -->
+            <div class="col-12 col-md-8">
+                <div class="card shadow-sm border-0 rounded-3 p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold text-dark m-0">
+                            📍 Viewing: <span class="text-primary">@(activeSelectedFolder?.Name ?? "Select a Directory Folder")</span>
+                        </h4>
+                        @if (activeSelectedFolder != null)
+                        {
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary btn-sm rounded-pill" @onclick="() => PromptCreateFolder(activeSelectedFolder.Id)">➕ Add Subfolder</button>
+                                <button class="btn btn-outline-warning btn-sm rounded-pill" @onclick="() => PromptRenameFolder(activeSelectedFolder)">✏️ Rename</button>
+                                <button class="btn btn-outline-danger btn-sm rounded-pill" @onclick="() => PromptDeleteFolder(activeSelectedFolder)">🗑️ Delete Tree</button>
+                            </div>
+                        }
+                    </div>
+
+                    @if (activeSelectedFolder == null)
+                    {
+                        <div class="text-center my-5 text-muted p-5 bg-light rounded-3 border border-dashed">
+                            <p class="m-0 fw-semibold">No active selection index rule.</p>
+                            <p class="small text-muted m-0">Highlight a directory node card row on the left folder map to browse your saved links catalog.</p>
+                        </div>
+                    }
+                    else if (displayBookmarks == null || !displayBookmarks.Any())
+                    {
+                        <div class="alert alert-info shadow-sm p-4 text-center rounded-3" role="alert">
+                            <h5 class="alert-heading fw-bold">This Folder is Empty!</h5>
+                            <p class="m-0 text-muted small">Capture a browser link using the extension or change locations to populate this branch space node.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-lg-2 g-3">
+                            @foreach (var bookmark in displayBookmarks)
+                            {
+                                <div class="col">
+                                    <!-- 🎨 VISUAL COLOR RULE: Soft shadow transitions with exact Green/Red border indicators -->
+                                    <div class="card h-100 shadow-sm border-2 rounded-3 transition-all overflow-hidden @(bookmark.IsViewed ? "border-success shadow-success-hover" : "border-danger shadow-danger-hover")">
+                                        <div class="card-body d-flex flex-column p-4">
+                                            <h5 class="card-title fw-bold text-dark text-truncate mb-2" title="@bookmark.Title">
+                                                @bookmark.Title
+                                            </h5>
+
+                                            <!-- 🚀 ADDED: LIKE/DISLIKE SYSTEM BUTTONS RIGHT HERE -->
+                                            <div class="d-flex gap-1 mb-3">
+                                                <button class="btn btn-extra-small @(bookmark.Category == BookmarkCategory.Liked ? "btn-success" : "btn-light text-muted")" @onclick="() => ChangePreference(bookmark, BookmarkCategory.Liked)">👍 Like</button>
+                                                <button class="btn btn-extra-small @(bookmark.Category == BookmarkCategory.Neutral ? "btn-secondary text-white" : "btn-light text-muted")" @onclick="() => ChangePreference(bookmark, BookmarkCategory.Neutral)">😐 Neutral</button>
+                                                <button class="btn btn-extra-small @(bookmark.Category == BookmarkCategory.Disliked ? "btn-danger" : "btn-light text-muted")" @onclick="() => ChangePreference(bookmark, BookmarkCategory.Disliked)">👎 Dislike</button>
+                                            </div>
+
+                                            <!-- 🔄 DYNAMIC HYBRIDS DROPDOWN CONTAINER -->
+                                            <div class="mb-3 d-flex align-items-center gap-1">
+                                                <label class="extra-small fw-bold text-muted text-uppercase m-0">📁 Location:</label>
+                                                <select class="form-select form-select-sm rounded-pill px-2 border-muted extra-small py-0"
+                                                        style="width: auto; max-width: 150px;"
+                                                        value="@bookmark.FolderId"
+                                                        @onchange="(e) => MoveBookmarkLocation(bookmark, e)">
+
+                                                    <!-- 🔒 CLOSED DISPLAY LAYER: Safely displays the current active folder cleanly without indents -->
+                                                    @if (allFolders != null)
+                                                    {
+                                                        var currentFolder = allFolders.FirstOrDefault(f => f.Id == bookmark.FolderId);
+                                                        if (currentFolder != null)
+                                                        {
+                                                            <option value="@currentFolder.Id" style="display: none;">📁 @currentFolder.Name</option>
+                                                        }
+                                                    }
+
+                                                    <!-- 🗂️ CHOICE SELECTION LAYER: Renders the beautiful structured tree indents when clicked -->
+                                                    @if (rootFolders != null)
+                                                    {
+                                                        @foreach (var folder in rootFolders)
+                                                        {
+                                                            @RenderDropdownOption(folder, 0)
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+
+
+
+                                            <div class="vault-summary-scrollbox text-muted mb-3 flex-grow-1">
+                                                @bookmark.AiSummary
+                                            </div>
+
+                                            <!-- Interactive Form Control Utility Tray Buttons -->
+                                            <div class="d-flex gap-2 mt-auto pt-2">
+                                                <a href="@bookmark.Url" target="_blank" class="btn btn-sm rounded-pill flex-grow-1 fw-semibold @(bookmark.IsViewed ? "btn-success" : "btn-danger")">
+                                                    🌐 Open Site
+                                                </a>
+
+                                                <!-- 👁️ Toggle viewed card status color mapping context check -->
+                                                <button class="btn btn-sm btn-outline-secondary rounded-circle" title="Mark Visibility State" @onclick="() => ToggleViewedStatus(bookmark)">
+                                                    @(bookmark.IsViewed ? "✓" : "👁")
+                                                </button>
+
+                                                <!-- 🗑️ Permanent Row Removal Button -->
+                                                <button class="btn btn-sm btn-outline-danger rounded-circle" title="Scrub Row" @onclick="() => DeleteBookmark(bookmark)">
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 💬 REAL-TIME CHAT PANEL: COMPLETELY RESTRICTED TO REGISTERED USERS ONLY -->
+        <div class="card shadow-sm border-0 rounded-3 mt-5 overflow-hidden animate-fade-in">
+            <div class="card-header bg-dark text-white p-3">
+                <h5 class="m-0 fw-bold">💬 Live Workspace Notes & Team Chat (Simulation Mode)</h5>
+            </div>
+            <div class="card-body p-4 bg-light" style="height: 200px; overflow-y: auto;">
+                @foreach (var msg in chatMessages)
+                {
+                    <div class="mb-2 p-2 bg-white rounded shadow-sm small">
+                        <strong>@msg.User:</strong> @msg.Text <span class="text-muted float-end extra-small">@msg.Time</span>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-white p-3 border-0">
+                <div class="input-group">
+                    <input type="text" class="form-control rounded-start-pill px-4" @bind="currentMessageInput" @onkeypress="HandleKeyPress" placeholder="Type a message stream..." />
+                    <button class="btn btn-primary rounded-end-pill px-4" @onclick="SendLiveMessage" disabled="@(!IsChatConnected)">Send</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ========================================== -->
+<!-- 🛡️ MODAL CONTROL DIALOG OVERLAYS -->
+<!-- ========================================== -->
+@if (showFolderModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content border-0 shadow rounded-3">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">📁 @modalTitleText</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <label class="form-label small fw-semibold text-muted">Directory Name String</label>
+                    <input type="text" class="form-control rounded-pill px-3" @bind="modalInputFolderName" placeholder="Type name layout..." />
+                </div>
+                <div class="modal-footer border-0 p-3 bg-light d-flex gap-2">
+                    <button class="btn btn-secondary btn-sm rounded-pill px-3" @onclick="CloseModal">Cancel</button>
+                    <button class="btn btn-primary btn-sm rounded-pill px-4" @onclick="SubmitFolderAction">Execute Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDeleteWarningModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+            <div class="modal-content border-0 shadow rounded-3 border-start border-danger border-5">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold">⚠️ CRITICAL DATA WARNING</h5>
+                </div>
+                <div class="modal-body p-4 text-dark">
+                    <p class="fw-bold text-danger mb-2">Are you absolutely sure you want to delete "@folderTargetToDelete?.Name"?</p>
+                    <p class="small text-muted m-0">Executing this action will trigger a **Cascade Wipe**. Every subfolder and bookmark sitting inside this folder row layout tree branch will be permanently scrubbed from your hard drive database file file forever!</p>
+                </div>
+                <div class="modal-footer border-0 p-3 bg-light d-flex gap-2">
+                    <button class="btn btn-secondary btn-sm rounded-pill px-3" @onclick="() => showDeleteWarningModal = false">Cancel, Keep Data</button>
+                    <button class="btn btn-danger btn-sm rounded-pill px-4 fw-bold" @onclick="ConfirmCascadeDeleteFolder">Yes, Delete Everything</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    RenderFragment RenderFolderNode(Folder folder, int depth) => __builder =>
+    {
+        var paddingAmount = depth * 15;
+        <div class="folder-node-row my-1" style="padding-left: @(paddingAmount)px;">
+            <div class="d-flex align-items-center justify-content-between p-2 rounded transition-all cursor-pointer @(activeSelectedFolder?.Id == folder.Id ? "bg-primary text-white shadow-sm" : "text-dark bg-white shadow-none hover-bg-light")"
+                 @onclick="() => SelectFolder(folder)">
+                <span class="text-truncate small fw-semibold">📂 @folder.Name</span>
+                <span class="badge bg-secondary rounded-pill extra-small text-white">@folder.Bookmarks.Count</span>
+            </div>
+        </div>
+        if (folder.SubFolders != null && folder.SubFolders.Any())
+        {
+            foreach (var sub in folder.SubFolders)
+            {
+                @RenderFolderNode(sub, depth + 1)
+            }
+        }
+    };
+
+    // 🗂️ RECURSIVE DROPDOWN INJECTOR: Dynamically indents nested subfolders right inside your select cards choice boxes!
+    RenderFragment RenderDropdownOption(Folder folder, int depth) => __builder =>
+    {
+        // Generates two clear empty text spaces for every layer deeper the folder sits
+        var indentationPrefix = new string(' ', depth * 2).Replace(" ", "\u00A0\u00A0");
+
+        <option value="@folder.Id">
+            @indentationPrefix @(depth > 0 ? "┕ 📂 " : "📁 ") @folder.Name
+        </option>
+
+        if (folder.SubFolders != null && folder.SubFolders.Any())
+        {
+            foreach (var sub in folder.SubFolders)
+            {
+                @RenderDropdownOption(sub, depth + 1)
+            }
+        }
+    };
+
+}
+
+@code {
+    private List<Folder>? allFolders;
+    private List<Folder> rootFolders = new();
+    private Folder? activeSelectedFolder;
+    private List<Bookmark> displayBookmarks = new();
+
+    // 🚀 ADDED: PARAMETER STATE TRACKING
+    private bool showDislikedBookmarks = false;
+
+    private HubConnection? syncConnection;
+    private HubConnection? hubConnection;
+    private List<ChatMessage> chatMessages = new();
+    private string currentMessageInput = string.Empty;
+    private string loggedInUser = "Guest";
+    private int loggedInUserId = 0;
+
+    // 🚀 ADDED: Dynamic track variable to store this user's distinct database Workspace key
+    private int userWorkspaceId = 0;
+
+    private bool showFolderModal = false;
+    private bool showDeleteWarningModal = false;
+    private string modalTitleText = string.Empty;
+    private string modalInputFolderName = string.Empty;
+    private int? modalTargetParentFolderId;
+    private Folder? folderTargetToRename;
+    private Folder? folderTargetToDelete;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Baseline setting
+        loggedInUser = "Guest";
+
+        try
+        {
+            // 🍪 COOKIE SYNC ENGINE: Read the shared cookie directly out of the browser drawer
+            string allCookies = await JSRuntime.InvokeAsync<string>("eval", "document.cookie");
+
+            // Parse out the "VaultSession=" user string value
+            var match = System.Text.RegularExpressions.Regex.Match(allCookies, @"VaultSession=([^;]+)");
+            if (match.Success && !string.IsNullOrEmpty(match.Groups[1].Value))
+            {
+                loggedInUser = match.Groups[1].Value; // Correctly maps "example user" across all open tabs
+
+                // Look up your physical user ID row key from the database matching your cookie name
+                var userRow = await DbContext.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == loggedInUser.ToLower());
+                if (userRow != null)
+                {
+                    loggedInUserId = userRow.Id;
+
+                    // 🚀 DYNAMIC MULTI-USER WORKSPACE LOOKUP:
+                    // Find or create a matching workspace entry matching this explicit user's vault row signature
+                    var userWorkspace = await DbContext.Workspaces
+                        .FirstOrDefaultAsync(w => w.Name == $"{userRow.Username}'s Vault");
+
+                    if (userWorkspace == null)
+                    {
+                        userWorkspace = new Workspace
+                        {
+                            Name = $"{userRow.Username}'s Vault",
+                            IsCollaborative = false
+                        };
+                        DbContext.Workspaces.Add(userWorkspace);
+                        await DbContext.SaveChangesAsync();
+                    }
+
+                    userWorkspaceId = userWorkspace.Id; // Assign the dynamic layout integer here!
+                }
+            }
+        }
+        catch (InvalidOperationException) { }
+
+        if (loggedInUser == "Guest") return;
+
+        // 🔄 INITIAL DATA LOAD: Pulls all folder and bookmark data into RAM for instant access
+        await RefreshFolderTreeData();
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Router.ToAbsoluteUri("/chathub"))
+            .WithAutomaticReconnect()
+            .Build();
+        
+        hubConnection.On<string, string, string>("ReceiveWorkspaceMessage", (user, text, timestamp) =>
+        {
+            chatMessages.Add(new ChatMessage(user, text, timestamp));
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+        await hubConnection.SendAsync("JoinWorkspaceChat", userWorkspaceId); // Changed from 1 to userWorkspaceId
+
+
+        // 🔒 CONNECT TO SILENT RECONCILIATION RADIO TOWER
+        syncConnection = new HubConnectionBuilder()
+            .WithUrl(Router.ToAbsoluteUri("/synchub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        // Listen for the specific background pulse token string
+        syncConnection.On("TriggerLayoutRefresh", async () =>
+        {
+            // Forces an immediate background check of your physical folder badge integers
+            await RefreshFolderTreeData();
+            await InvokeAsync(StateHasChanged); // Updates counts on screen instantly!
+        });
+
+        await syncConnection.StartAsync();
+
+        // Listen exclusively to your private account's pipeline group to keep multi-user spaces isolated
+        string userGroupName = $"UserSync_{loggedInUser.ToLower()}";
+        await syncConnection.SendAsync("JoinSyncGroup", userGroupName);
+
+    }
+
+    private async Task RefreshFolderTreeData()
+    {
+        allFolders = await DbContext.Folders
+            .Include(f => f.Bookmarks)
+            .Where(f => f.CreatedBy == loggedInUserId)
+            .ToListAsync();
+
+        rootFolders = allFolders.Where(f => f.ParentFolderId == null).ToList();
+
+        foreach (var folder in allFolders)
+        {
+            folder.SubFolders = allFolders.Where(f => f.ParentFolderId == folder.Id).ToList();
+        }
+
+        if (activeSelectedFolder != null)
+        {
+            activeSelectedFolder = allFolders.FirstOrDefault(f => f.Id == activeSelectedFolder.Id);
+            if (activeSelectedFolder != null)
+            {
+                displayBookmarks = await DbContext.Bookmarks
+                    .Where(b => b.FolderId == activeSelectedFolder.Id)
+                    .OrderByDescending(b => b.Timestamp)
+                    .ToListAsync();
+            }
+        }
+    }
+
+    private async Task SelectFolder(Folder folder)
+    {
+        activeSelectedFolder = folder;
+        displayBookmarks = await DbContext.Bookmarks
+            .Where(b => b.FolderId == folder.Id)
+            .OrderByDescending(b => b.Timestamp)
+            .ToListAsync();
+    }
+
+    private async Task NavigateToLoginViaButton()
+    {
+        await SessionVault.SetAsync("ButtonNavigationClearance", "Allowed");
+        Router.NavigateTo("dashboard/login");
+    }
+
+    private void PromptCreateFolder(int? parentId)
+    {
+        folderTargetToRename = null;
+        modalTargetParentFolderId = parentId;
+        modalTitleText = parentId == null ? "Create New Main Directory" : "Create Nested Subfolder";
+        modalInputFolderName = string.Empty;
+        showFolderModal = true;
+    }
+
+    private void PromptRenameFolder(Folder folder)
+    {
+        modalTargetParentFolderId = null;
+        folderTargetToRename = folder;
+        modalTitleText = $"Rename Directory: {folder.Name}";
+        modalInputFolderName = folder.Name;
+        showFolderModal = true;
+    }
+
+    private void PromptDeleteFolder(Folder folder)
+    {
+        folderTargetToDelete = folder;
+        showDeleteWarningModal = true;
+    }
+
+    private void CloseModal() => showFolderModal = false;
+
+    private async Task SubmitFolderAction()
+    {
+        if (string.IsNullOrWhiteSpace(modalInputFolderName) || loggedInUserId == 0) return;
+
+        if (folderTargetToRename != null)
+            folderTargetToRename.Name = modalInputFolderName;
+        else
+        {
+            var newFolder = new Folder
+            {
+                Name = modalInputFolderName,
+                ParentFolderId = modalTargetParentFolderId,
+                WorkspaceId = userWorkspaceId, // Changed from 1 to userWorkspaceId,
+                CreatedBy = loggedInUserId
+            };
+            DbContext.Folders.Add(newFolder);
+        }
+
+        await DbContext.SaveChangesAsync();
+        await RefreshFolderTreeData();
+        showFolderModal = false;
+    }
+
+    private async Task ConfirmCascadeDeleteFolder()
+    {
+        if (folderTargetToDelete != null)
+        {
+            DbContext.Folders.Remove(folderTargetToDelete);
+            await DbContext.SaveChangesAsync();
+            if (activeSelectedFolder?.Id == folderTargetToDelete.Id)
+            {
+                activeSelectedFolder = null;
+                displayBookmarks.Clear();
+            }
+            showDeleteWarningModal = false;
+            await RefreshFolderTreeData();
+        }
+    }
+
+    private async Task ToggleViewedStatus(Bookmark bookmark)
+    {
+        bookmark.IsViewed = !bookmark.IsViewed;
+        DbContext.Bookmarks.Update(bookmark);
+        await DbContext.SaveChangesAsync();
+    }
+
+    // 🔄 CORE LOCATION SHIFT ENGINE: Safely relocates a bookmark between database folders
+    private async Task MoveBookmarkLocation(Bookmark bookmark, ChangeEventArgs e)
+    {
+        if (e.Value == null || !int.TryParse(e.Value.ToString(), out int targetFolderId)) return;
+
+        // 1. Update the structural reference key column inside your bookmarks entity row
+        bookmark.FolderId = targetFolderId;
+        DbContext.Bookmarks.Update(bookmark);
+
+        // 2. Write the modification safely to your hard drive database file disk
+        await DbContext.SaveChangesAsync();
+
+        // 3. SILENT LIVE COUNTER SYNC: Send a notification down your background SyncHub tower line
+        // to immediately recalculate badge counts across your sidebar directories tree branches!
+        if (syncConnection != null)
+        {
+            string userGroupName = $"UserSync_{loggedInUser.ToLower()}";
+            await syncConnection.SendAsync("JoinSyncGroup", userGroupName);
+        }
+
+        // 4. Instantly refresh the visual layouts data stream rows to sync up your monitors
+        await RefreshFolderTreeData();
+    }
+
+    // 🚀 ADDED: STEAM-FILTER BACKING ENGINES RIGHT HERE
+    private async Task RefreshActiveFolderDisplay()
+    {
+        if (activeSelectedFolder != null)
+        {
+            var baseQuery = DbContext.Bookmarks
+                .Where(b => b.FolderId == activeSelectedFolder.Id);
+
+            // If toggle switch is false, filter out any Disliked rows from view!
+            if (!showDislikedBookmarks)
+            {
+                baseQuery = baseQuery.Where(b => b.Category != BookmarkCategory.Disliked);
+            }
+
+            displayBookmarks = await baseQuery
+                .OrderByDescending(b => b.Timestamp)
+                .ToListAsync();
+        }
+    }
+
+    private async Task ChangePreference(Bookmark bookmark, BookmarkCategory targetCategory)
+    {
+        bookmark.Category = targetCategory;
+        DbContext.Bookmarks.Update(bookmark);
+        await DbContext.SaveChangesAsync();
+
+        // Recalculate displays to apply your auto-hiding filtering immediately
+        await RefreshActiveFolderDisplay();
+        await RefreshFolderTreeData();
+    }
+
+    private async Task DeleteBookmark(Bookmark bookmark)
+    {
+        DbContext.Bookmarks.Remove(bookmark);
+        await DbContext.SaveChangesAsync();
+        displayBookmarks.Remove(bookmark);
+        await RefreshFolderTreeData();
+    }
+
+    private async Task SendLiveMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(currentMessageInput))
+        {
+            // Capture the exact current short time text string
+            string currentTimeStamp = DateTime.Now.ToShortTimeString();
+
+            // Changed workspace identifier parameter from 1 to userWorkspaceId
+            await hubConnection!.SendAsync("SendWorkspaceMessage", userWorkspaceId, loggedInUser, currentMessageInput, currentTimeStamp);
+            currentMessageInput = string.Empty;
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await SendLiveMessage();
+    }
+
+    private async Task HandleLogOut()
+    {
+        // 🍪 COOKIE DESTRUCTION: Wipes the shared extension cookie out of the browser drawer instantly!
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.cookie = 'VaultSession=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; SameSite=None'");
+        }
+        catch (Exception) { }
+
+        // 3. Safely dismantle your real-time SignalR networking line connections
+        if (hubConnection != null)
+        {
+            await hubConnection.SendAsync("LeaveWorkspaceChat", userWorkspaceId); // 🚀 CHANGED: Leaves your unique room instead of 1
+            await hubConnection.DisposeAsync();
+            hubConnection = null;
+        }
+
+        // Clear out your active RAM lists context profiles
+        loggedInUser = "Guest";
+        loggedInUserId = 0;
+        userWorkspaceId = 0; // 🚀 CHANGED: Safely scrubs your workspace tracking key out of memory
+        activeSelectedFolder = null; // Unhighlights your selected folder index row
+
+        // 2. SECURE RAM SCRUB ENGINE: Clear out your data cache arrays immediately!
+        chatMessages.Clear();
+        displayBookmarks.Clear(); // Wipes all bookmark data cards out of active RAM!
+        rootFolders.Clear();       // Wipes the folder tree layout nodes out of active RAM!
+        allFolders?.Clear();       // Empties the complete master array cache container
+
+        // 4. Instantly force the HTML page layout to redraw its clean, empty skeleton state
+        await InvokeAsync(StateHasChanged);
+
+        // 5. Direct the user safely back onto the clean root page layout path
+        Router.NavigateTo("dashboard");
+    }
+
+
+    public bool IsChatConnected => hubConnection?.State == HubConnectionState.Connected;
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.SendAsync("LeaveWorkspaceChat", userWorkspaceId); // 🚀 CHANGED: Cleans up your isolated room connection instead of 1
+            await hubConnection.DisposeAsync();
+        }
+
+
+        if (syncConnection != null)
+        {
+            string userGroupName = $"UserSync_{loggedInUser.ToLower()}";
+            await syncConnection.SendAsync("LeaveSyncGroup", userGroupName);
+            await syncConnection.DisposeAsync();
+        }
+    }
+
+    private record ChatMessage(string User, string Text, string Time);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // 🔍 Check if the temporary clearance token exists
+                var clearance = await SessionVault.GetAsync<string>("SandboxAccessClearance");
+
+                if (!clearance.Success || clearance.Value != "Granted")
+                {
+                    // 🛑 BLOCKED: They tried to bypass the funnel. Bounce them straight back to the Case Study!
+                    Router.NavigateTo("portfolio/bookmarks-vault");
+                    return;
+                }
+
+                // 🧼 ONE-TIME USE SCRUB: Wipe the clearance pass token instantly from memory.
+                // This means if they bookmark this URL, hit F5, or share it, it will fail and force them back.
+                await SessionVault.DeleteAsync("SandboxAccessClearance");
+            }
+            catch (Exception)
+            {
+                // Fallback safety exit to keep dashboard completely locked down
+                Router.NavigateTo("portfolio/bookmarks-vault");
+            }
+        }
+    }
+
+}
+
+<style>
+
+    /* 🚀 ADDED: COMPACT RATINGS BUTTON DESIGN SCHEMES */
+    .btn-extra-small {
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .cub-toggle-input:checked {
+        background-color: #3a0647 !important;
+        border-color: #3a0647 !important;
+    }
+
+    /* Custom Scrolled Card Text Container */
+    .vault-summary-scrollbox {
+        height: 110px;            /* Fixes the description box at a decent, uniform size */
+        overflow-y: auto;          /* Automatically turns on a vertical scrollbar if text flows too long! */
+        padding-right: 5px;       /* Adds a tiny breathing room margin next to the scroll path */
+        font-size: 0.875rem;       /* Keeps text crisp and readable */
+        scrollbar-width: thin;    /* Renders a modern, narrow scrollbar strip in Firefox */
+        
+        /* 🚀 THE CRITICAL PARSING ADDITION: Honors original newlines and structured line breaks! */
+        white-space: pre-wrap;    
+    }
+
+    /* Webkit adjustments for clean, narrow scrollbar tracks in Chrome/Edge/Safari */
+    .vault-summary-scrollbox::-webkit-scrollbar {
+        width: 5px;
+    }
+    .vault-summary-scrollbox::-webkit-scrollbar-thumb {
+        background-color: #ced4da;
+        border-radius: 10px;
+    }
+    .vault-summary-scrollbox::-webkit-scrollbar-thumb:hover {
+        background-color: #adb5bd;
+    }
+</style>
+
+
+
+

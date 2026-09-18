@@ -1,0 +1,149 @@
+﻿@page "/dashboard/login"
+@using BookmarkManager.Server
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject AuthService SecurityEngine
+@inject NavigationManager Router
+@inject ProtectedLocalStorage SessionVault
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Vault Sign In</PageTitle>
+
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow border-0 rounded-3 p-4 position-relative">
+        
+        <!-- ❌ THE ABSOLUTE CLOSE BUTTON NODE -->
+        <button type="button"
+                class="btn-close position-absolute top-0 end-0 m-3 shadow-none"
+                aria-label="Close"
+                @onclick='() => Router.NavigateTo("dashboard")'
+                title="Exit to Dashboard"></button>
+
+        <div class="text-center mb-4 mt-2">
+            <h3 class="fw-bold text-primary m-0">🔐 Vault Access</h3>
+            <p class="text-muted small">Sign into your private folder workspace profile</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(statusMessage))
+        {
+            <div class="alert @(isError ? "alert-danger" : "alert-success") small rounded-3" role="alert">
+                @statusMessage
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Username</label>
+            <input type="text" class="form-control rounded-pill px-3" @bind="inputUsername" placeholder="Enter username..." />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label small fw-semibold text-muted">Password</label>
+            <input type="password" class="form-control rounded-pill px-3" @bind="inputPassword" placeholder="Enter password..." />
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <button class="btn btn-primary rounded-pill fw-semibold" @onclick="HandleLogin">
+                Sign In to Vault
+            </button>
+            <!-- Updated: Grants dynamic permission clearance to let them transition into registration cleanly -->
+            <button class="btn btn-link btn-sm text-decoration-none text-muted" @onclick="NavigateToRegisterWithClearance">
+                Need an account? Register here
+            </button>
+
+        </div>
+    </div>
+</div>
+
+@code {
+    private string inputUsername = string.Empty;
+    private string inputPassword = string.Empty;
+    private string statusMessage = string.Empty;
+    private bool isError = false;
+
+    // 🛡️ RE-ROUTE GUARD: Runs the moment the tab connection is 100% active and ready
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // 1. Check if they clicked the real button or typed the URL text manually
+                var clearance = await SessionVault.GetAsync<string>("ButtonNavigationClearance");
+
+                if (!clearance.Success || clearance.Value != "Allowed")
+                {
+                    // ABSOLUTE BLOCKED: Throw manual URL typers straight out!
+                    Router.NavigateTo("dashboard");
+                    return;
+                }
+
+                // 2. ONE-TIME USE TOKEN SCRUB: Wipe the clearance token instantly!
+                // This means hitting F5 or typing the link a second time will completely fail.
+                await SessionVault.DeleteAsync("ButtonNavigationClearance");
+
+                // 3. Double-check if they are already signed in
+                // Check if they are already signed in via cookies
+                var allCookies = await JSRuntime.InvokeAsync<string>("eval", "document.cookie");
+                var match = System.Text.RegularExpressions.Regex.Match(allCookies, @"VaultSession=([^;]+)");
+                if (match.Success && !string.IsNullOrEmpty(match.Groups[1].Value))
+                {
+                    // If an active user cookie is found on this PC, bounce them safely to the dashboard!
+                    Router.NavigateTo("dashboard");
+                }
+
+            }
+            catch (Exception)
+            {
+                // Fallback exit if any system anomalies pop up
+                Router.NavigateTo("dashboard");
+            }
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        statusMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(inputUsername) || string.IsNullOrWhiteSpace(inputPassword))
+        {
+            isError = true;
+            statusMessage = "Please complete all fields.";
+            return;
+        }
+
+        var verifiedUser = await SecurityEngine.LoginAsync(inputUsername, inputPassword);
+
+        if (verifiedUser != null)
+        {
+            isError = false;
+            statusMessage = $"Welcome back, {verifiedUser.Username}! Redirecting...";
+
+
+            // 🍪 COOKIE BRIDGE: Safely writes an encrypted cookie right into the browser session profile!
+            // This is visible to your extension popup naturally from any open website tab!
+            try
+            {
+                // Expires in 7 days, locked to secure HTTPS channels, readable across sub-paths
+                string cookieString = $"VaultSession={verifiedUser.Username}; path=/; max-age=604800; Secure; SameSite=None";
+                await JSRuntime.InvokeVoidAsync("eval", $"document.cookie = '{cookieString}'");
+            }
+            catch (Exception) { }
+
+            await Task.Delay(1000);
+            Router.NavigateTo("dashboard");
+        }
+        else
+        {
+            isError = true;
+            statusMessage = "Invalid username or password credentials.";
+        }
+    }
+
+    private async Task NavigateToRegisterWithClearance()
+    {
+        // Re-grant the temporary navigation pass code token so Register.razor welcomes them in!
+        await SessionVault.SetAsync("ButtonNavigationClearance", "Allowed");
+        Router.NavigateTo("dashboard/register");
+    }
+
+}
+

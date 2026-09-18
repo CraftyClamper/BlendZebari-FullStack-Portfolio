@@ -1,0 +1,67 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-uppercase" href="">🚀 Blend Zebari</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <!-- 👤 PORTFOLIO HOME BASE ROUTE -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Portfolio Home
+            </NavLink>
+        </div>
+
+        <!-- 📋 MASTER PROJECT CASE STUDY LINK -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="portfolio/bookmarks-vault">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Case Study
+            </NavLink>
+        </div>
+
+        <!-- 📄 DEDICATED DIGITAL CV ROUTE -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="resume">
+                <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Professional CV
+            </NavLink>
+        </div>
+
+        <!-- 🛠️ UTILITY DEVELOPER SANDBOX DROPDOWN -->
+        <div class="border-top my-3 mx-3 border-light border-opacity-10"></div>
+
+        <div class="nav-item px-3">
+            <button class="nav-link dev-toggle-btn" @onclick="ToggleSandboxMenu" @onclick:stopPropagation="true" type="button">
+                <span>🛠️ Developer Utilities</span>
+                <span class="dropdown-arrow">@(isSandboxExpanded ? "▼" : "►")</span>
+            </button>
+        </div>
+
+        @if (isSandboxExpanded)
+        {
+            <div class="sandbox-drawer mx-3 mb-3 p-1">
+                <div class="nav-item m-0">
+                    <NavLink class="nav-link sandbox-link" href="sandbox/counter">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Default Counter
+                    </NavLink>
+                </div>
+                <div class="nav-item m-0">
+                    <NavLink class="nav-link sandbox-link" href="sandbox/weather" style="margin-top: 4px;">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Default Weather
+                    </NavLink>
+                </div>
+            </div>
+        }
+    </nav>
+</div>
+
+@code {
+    private bool isSandboxExpanded = false;
+
+    private void ToggleSandboxMenu()
+    {
+        isSandboxExpanded = !isSandboxExpanded;
+    }
+}

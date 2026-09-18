@@ -1,0 +1,165 @@
+﻿@page "/portfolio/bookmarks-vault"
+@inject NavigationManager Router
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage SessionVault
+
+<PageTitle>Case Study: Enhanced Bookmark Manager Ecosystem</PageTitle>
+
+<div class="container my-5" style="max-width: 950px; line-height: 1.7;">
+    <!-- NAVIGATION BACK TO HOME -->
+    <button class="btn btn-link text-decoration-none p-0 mb-4 text-muted fw-semibold" @onclick='() => Router.NavigateTo("")'>
+        ← Back to Portfolio Home
+    </button>
+
+    <!-- PROJECT HEADER -->
+    <div class="mb-4">
+        <span class="badge bg-primary px-3 py-2 rounded-pill mb-2 text-uppercase fw-bold tracking-wide" style="font-size: 0.75rem;">
+            Full-Stack Architecture Case Study
+        </span>
+        <h1 class="fw-black text-dark display-4 mb-2">An Enhanced Bookmark Manager</h1>
+        <p class="lead text-muted">
+            A cross-platform web ecosystem integrating a <strong>Manifest V3 Chrome Extension</strong> with an <strong>ASP.NET Core Blazor Web App</strong>.
+        </p>
+    </div>
+
+    <!-- CONNECTED ACTION BRIDGE WITH SECURITY PASS-THROUGH -->
+    <div class="p-4 bg-primary text-white rounded-3 my-4 d-flex flex-wrap justify-content-between align-items-center gap-3 shadow-sm border-0">
+        <div>
+            <h5 class="fw-bold m-0 text-white">Ready to test the live functional product?</h5>
+            <small class="text-white text-opacity-75">Unlocks access to the live sandbox application sub-route environment.</small>
+        </div>
+        <button class="btn btn-light rounded-pill px-4 fw-bold shadow-sm text-primary" @onclick="UnlockAndNavigateToSandbox">
+            🔓 Unlock & Launch Live App Sandbox →
+        </button>
+    </div>
+
+    <hr class="my-5" />
+
+    <!-- TECHNICAL SPECIFICATIONS GRID -->
+    <div class="row g-3 my-4">
+        <div class="col-6 col-md-3">
+            <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
+                <h5 class="fw-bold text-primary m-0">Manifest V3</h5>
+                <small class="text-muted extra-small d-block mt-1">Chrome Extension Core</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
+                <h5 class="fw-bold text-success m-0">SignalR</h5>
+                <small class="text-muted extra-small d-block mt-1">Real-Time Social Hub</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
+                <h5 class="fw-bold text-warning m-0">AI Digest</h5>
+                <small class="text-muted extra-small d-block mt-1">LLM Web Scraping</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
+                <h5 class="fw-bold text-danger m-0">EF Core</h5>
+                <small class="text-muted extra-small d-block mt-1">PostgreSQL Data Layer</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧠 THE PROBLEM & SOLUTION -->
+    <div class="my-5">
+        <h3 class="fw-bold text-dark border-bottom pb-2 mb-3">🎯 Executive Summary & Purpose</h3>
+        <p class="text-secondary">
+            Standard browser bookmarking systems lack automation, extensive categorization capabilities, and structure. Users are forced to organize directories manually, and static links offer zero insights into updated content.
+        </p>
+        <p class="text-secondary">
+            This ecosystem fixes that by introducing a global cross-platform sync architecture. Using a <strong>Manifest V3 Chrome Extension</strong> and a standalone <strong>Blazor Web App Dashboard</strong>, users can instantly capture metadata, auto-generate AI content summaries, track reading states, and collaborate on shared workspaces in real time.
+        </p>
+    </div>
+
+    <!-- 🛠️ CORE ARCHITECTURAL FEATURES -->
+    <div class="my-5">
+        <h3 class="fw-bold text-dark border-bottom pb-2 mb-3">⚙️ Core Engineering Pillars</h3>
+        <div class="row g-4 mt-1">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
+                    <h5 class="fw-bold text-dark">🔄 Cross-Platform Data Ingestion</h5>
+                    <p class="small text-muted m-0">
+                        Built a specialized sync pipeline. The Chrome Extension intercepts active page metadata on a user keyboard shortcut, packaging it into a JSON payload transmitted securely to the Blazor backend web API.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
+                    <h5 class="fw-bold text-dark">⚡ SignalR Real-Time Collaboration</h5>
+                    <p class="small text-muted m-0">
+                        Implements real-time workspace collaboration. Multiple users can edit directory indices simultaneously. SignalR broadcasts comments, cursor rules, and node changes across active client stations instantly.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
+                    <h5 class="fw-bold text-dark">🧠 AI Digest Engine</h5>
+                    <p class="small text-muted m-0">
+                        Integrated an external LLM web-scraping background worker. The processing server automatically digests captured raw HTML, generating a concise text overview under 3 sentences in under 3 seconds.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
+                    <h5 class="fw-bold text-dark">🛡️ Privacy Guard & Filtering</h5>
+                    <p class="small text-muted m-0">
+                        Features local password locking to encrypt the local UI view layer on Chrome, combined with a Steam-style filter engine that dynamically auto-hides disliked assets from the workspace view.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🗄️ THE PIPELINE DATA FLOW -->
+    <div class="my-5 p-4 border rounded-3 bg-white">
+        <h4 class="fw-bold text-dark mb-3">🔄 The Lifecycle of a Saved Bookmark</h4>
+        <ol class="text-secondary small space-y-2 mb-0">
+            <li class="mb-2"><strong>Capture:</strong> Extension intercepts page DOM/metadata via shortcut listener and ships JSON to the Blazor API.</li>
+            <li class="mb-2"><strong>Processing:</strong> Blazor server processes the data stream, triggering an asynchronous LLM background call to produce an <code>AiSummary</code>.</li>
+            <li class="mb-2"><strong>Database Commits:</strong> Entity Framework Core saves the unified entity model record securely into a relational database cluster.</li>
+            <li><strong>Live Propagation:</strong> Connected client dashboards receive an instantaneous live interface update via persistent SignalR hub sockets without forcing a page refresh.</li>
+        </ol>
+    </div>
+
+    <!-- 🔮 FUTURE SCALABILITY PLAN -->
+    <div class="my-5">
+        <h3 class="fw-bold text-dark border-bottom pb-2 mb-3">🔮 Production Scalability & Future Work</h3>
+        <p class="text-secondary">
+            To scale this application into a fully competitive commercial SaaS platform, the development timeline is prioritized around four advanced updates:
+        </p>
+        <ul class="text-muted small">
+            <li class="mb-2"><strong>Nested Workspace Hierarchy:</strong> Implementing self-referencing foreign-key configurations inside the data entity model to support infinite parent-child nested folder topologies.</li>
+            <li class="mb-2"><strong>Smart Automated Auto-Tagging:</strong> Directing the background AI pipeline to automatically generate topical hashes (e.g., <code>#developer</code>, <code>#recipe</code>) based on text categorization scoring vectors.</li>
+            <li class="mb-2"><strong>Offline Core Persistence:</strong> Integrating index architecture backups locally so users can browse historical content digests without active web sockets.</li>
+            <li><strong>Automated Dead Link Monitoring:</strong> Writing background cron utilities to periodically check for 404 response errors, ensuring all saved records remain operational.</li>
+        </ul>
+    </div>
+
+    <!-- FOOTER CALL TO ACTION -->
+    <div class="border-top pt-4 text-center">
+        <h5 class="fw-bold text-dark">Interested in building a similar custom ecosystem?</h5>
+        <p class="text-muted small">I specialize in full-stack architecture, real-time networking hubs, and secure extension development.</p>
+        <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+            <button class="btn btn-primary rounded-pill px-4 fw-semibold" @onclick='() => Router.NavigateTo("portfolio/bookmarks-vault/sandbox")'>
+                🔓 Test Sandbox Application Demo
+            </button>
+            <a href="mailto:z_blend@hotmail.com" class="btn btn-outline-dark rounded-pill px-4">
+                📧 Contact via Email
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task UnlockAndNavigateToSandbox()
+    {
+        // 🔑 Issue a temporary session-clearance pass code key
+        await SessionVault.SetAsync("SandboxAccessClearance", "Granted");
+
+        // Routely transfer them onto the sub-path
+        Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
+    }
+}

@@ -1,0 +1,179 @@
+﻿@page "/resume"
+@inject NavigationManager Router
+
+<PageTitle>Blend Zebari | Professional Full-Stack CV</PageTitle>
+
+<div class="container my-5 shadow-sm p-4 p-md-5 bg-white rounded-3 border text-dark" style="max-width: 850px; line-height: 1.6;">
+
+    <!-- 📄 CV HEADER SUMMARY -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-4 mb-4">
+        <div>
+            <h1 class="fw-bold m-0" style="color: #212529;">Blend Zebari</h1>
+            <p class="text-primary fw-semibold m-0 fs-5">Fullstack Developer & Systems Engineer</p>
+            <small class="text-muted d-block mt-1">📍 Karlstad, Sweden</small>
+        </div>
+        <div class="text-md-end mt-3 mt-md-0 small text-muted">
+            <div class="mb-1">📧 <a href="mailto:z_blend@hotmail.com" class="text-decoration-none">z_blend@hotmail.com</a></div>
+            <div class="mb-1">📞 0739274884</div>
+            <span class="badge bg-light text-secondary border mt-1">🚗 Driving License (B-Körkort) & Truckkort</span>
+        </div>
+    </div>
+
+    <!-- 🎯 PROFESSIONAL OBJECTIVE -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-2" style="font-size: 0.9rem;">🎯 Professional Objective</h5>
+        <p class="text-muted small m-0" style="text-align: justify;">
+            Highly driven Fullstack Developer holding a Bachelor’s Degree in Information Systems (Specialization: Web Development) from Karlstad University. Experienced in engineering business-critical web management systems, building secure Chrome extensions, customizing enterprise e-commerce environments, and designing real-time synchronization pipelines. Proven capability in translating complex data models into fast, modern, and high-converting digital architectures.
+        </p>
+    </div>
+
+    <!-- 🛠️ COMPLETE TECH STACK OVERVIEW -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-3" style="font-size: 0.9rem;">⚙️ Technical Ecosystem Stack</h5>
+        <div class="row g-3">
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded h-100 border-0 shadow-sm">
+                    <h6 class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Backend & API Layers</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">C#</span>
+                        <span class="badge bg-dark extra-small">ASP.NET Core</span>
+                        <span class="badge bg-dark extra-small">Node.js</span>
+                        <span class="badge bg-dark extra-small">Express</span>
+                        <span class="badge bg-dark extra-small">REST API Design</span>
+                        <span class="badge bg-dark extra-small">SignalR Hubs</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded h-100 border-0 shadow-sm">
+                    <h6 class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Frontend & E-Commerce</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">Blazor (Server/WASM)</span>
+                        <span class="badge bg-dark extra-small">React</span>
+                        <span class="badge bg-dark extra-small">TypeScript</span>
+                        <span class="badge bg-dark extra-small">JavaScript (ES6+)</span>
+                        <span class="badge bg-dark extra-small">HTML5 & CSS3</span>
+                        <span class="badge bg-success extra-small text-white fw-bold">Shopify</span>
+                        <span class="badge bg-success extra-small text-white fw-bold">WordPress</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="p-3 bg-light rounded h-100 border-0 shadow-sm">
+                    <h6 class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Data & Specialties</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">PostgreSQL / SQLite</span>
+                        <span class="badge bg-dark extra-small">EF Core</span>
+                        <span class="badge bg-dark extra-small">Manifest V3 Extensions</span>
+                        <span class="badge bg-dark extra-small">Web Scraping</span>
+                        <span class="badge bg-dark extra-small">Formik & Yup</span>
+                        <span class="badge bg-dark extra-small">AI/LLM Content Digests</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💼 PROFESSIONAL ENGINEERING HISTORY -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-3" style="font-size: 0.9rem;">💼 Professional Experience</h5>
+
+        <!-- MOVZ AB -->
+        <div class="mb-4 border-start border-primary border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Fullstack Developer</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Movz AB — Karlstad Innovation Park</span>
+            </div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Developed and optimized a business-critical administrative dashboard platform leveraging React, TypeScript, and Node.js. Engineered modular layouts, seamless backend data services, and advanced form handling to maximize end-user interaction quality.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Architected robust REST API workflows to handle complex asynchronous user-data synchronization.</li>
+                <li>Designed strict validation barriers using Formik and Yup to secure incoming data states.</li>
+                <li><strong>Core Business Impact:</strong> Significantly accelerated milestones ahead of planning schedules, improving codebase maintainability and documentation standards.</li>
+            </ul>
+        </div>
+
+        <!-- AFFORDABLE LUXURYS INTERNSHIP -->
+        <div class="mb-4 border-start border-success border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Fullstack E-Commerce Developer (Internship)</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Affordable Luxurys</span>
+            </div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Completed a targeted professional immersion specializing in enterprise e-commerce site optimization, asset management, and layout adaptations.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Customized design assets, styles, and template parameters across active Shopify and WordPress production storefronts.</li>
+                <li>Leveraged modern HTML5, CSS3, and API calls to resolve frontend bugs and guarantee cross-device mobile responsiveness.</li>
+                <li>Gained practical industry experience managing online product inventories, plugin pipelines, and client checkout interfaces.</li>
+            </ul>
+        </div>
+
+        <!-- VFU PRACTICUM -->
+        <div class="border-start border-secondary border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Educational Practicum Specialist (VFU)</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Kvarnbergsskolan</span>
+            </div>
+            <p class="text-muted small m-0" style="text-align: justify;">
+                Coordinated, planned, and delivered primary educational frameworks focusing on structural language comprehension and applied mathematics. Enhanced critical group management skills, professional communication adaptability, and interpersonal relationship strategies.
+            </p>
+        </div>
+    </div>
+
+    <!-- 🎓 HIGHER EDUCATION (VERIFIED VIA OFFICIAL UNIVERSITY RECORD) -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-2" style="font-size: 0.9rem;">🎓 Higher Education</h5>
+        <div class="ps-1">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Bachelor of Science in Information Systems (180 ECTS)</h6>
+                <span class="text-muted extra-small fw-semibold">Graduated Nov 2022</span>
+            </div>
+            <div class="text-primary small fw-semibold mb-2">Karlstad University (Handelshögskolan) — Karlstad, Sweden</div>
+            <p class="text-muted small" style="text-align: justify; margin-bottom: 0.75rem;">
+                Completed the comprehensive **Web Developer (Webbutvecklare)** study programme. Developed a strong academic and practical foundation in full-stack web applications, interaction design, and system architecture.
+            </p>
+
+            <!-- VERIFIED ACADEMIC MODULES MATRIX -->
+            <div class="p-3 bg-light rounded border border-opacity-50">
+                <small class="fw-bold text-secondary text-uppercase d-block mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">Completed Academic Core Modules:</small>
+                <div class="row g-2 extra-small text-muted">
+                    <div class="col-md-6">
+                        <ul class="mb-0 ps-3">
+                            <li>✔️ Development of Web Applications</li>
+                            <li>✔️ Server-side Programming in JavaScript</li>
+                            <li>✔️ Database Design & Modeling</li>
+                            <li>✔️ Introductory & OOP Programming</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0 ps-3">
+                            <li>✔️ Systems Implementation Techniques</li>
+                            <li>✔️ User Testing, Prototyping & Evaluation</li>
+                            <li>✔️ Interaction Design (UX/UI Frameworks)</li>
+                            <li>✔️ Introduction to Artificial Intelligence</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚀 CALL TO ACTION LINKING BACK TO CASE STUDY -->
+    <div class="p-4 bg-dark text-white rounded-3 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h6 class="fw-bold m-0 text-white">Want to see my fullstack development skills in action?</h6>
+            <small class="text-muted extra-small">Review the system architecture case study for my master project ecosystem.</small>
+        </div>
+        <button class="btn btn-primary rounded-pill px-4 btn-sm fw-semibold shadow-sm" @onclick='() => Router.NavigateTo("portfolio/bookmarks-vault")' type="button">
+            📁 View Project Case Study
+        </button>
+    </div>
+</div>
+
+<style>
+    .extra-small {
+        font-size: 0.75rem !important;
+    }
+</style>

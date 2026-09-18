@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/BookmarkManager.Extension/">
+    <File Path="BookmarkManager.Extension/background.js" />
+    <File Path="BookmarkManager.Extension/manifest.json" />
+    <File Path="BookmarkManager.Extension/popup.html" />
+    <File Path="BookmarkManager.Extension/popup.js" />
+  </Folder>
+  <Project Path="BookmarkManager.Server/BookmarkManager.Server.csproj" Id="f0847004-1549-44e0-92be-58fa6d5efaa9" />
+  <Project Path="BookmarkManager.Shared/BookmarkManager.Shared.csproj" />
+</Solution>
