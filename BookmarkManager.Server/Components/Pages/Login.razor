@@ -11,11 +11,11 @@
 <div class="container mt-5" style="max-width: 450px;">
     <div class="card shadow border-0 rounded-3 p-4 position-relative">
         
-        <!-- ❌ THE ABSOLUTE CLOSE BUTTON NODE -->
+        <!-- ❌ FIXED DESTINATION: CLOSE BUTTON POINTS TO THE TRUE NESTED SANDBOX ROUTE -->
         <button type="button"
                 class="btn-close position-absolute top-0 end-0 m-3 shadow-none"
                 aria-label="Close"
-                @onclick='() => Router.NavigateTo("dashboard")'
+                @onclick='() => Router.NavigateTo("portfolio/bookmarks-vault/sandbox")'
                 title="Exit to Dashboard"></button>
 
         <div class="text-center mb-4 mt-2">
@@ -72,7 +72,7 @@
                 if (!clearance.Success || clearance.Value != "Allowed")
                 {
                     // ABSOLUTE BLOCKED: Throw manual URL typers straight out!
-                    Router.NavigateTo("dashboard");
+                    Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
                     return;
                 }
 
@@ -86,15 +86,15 @@
                 var match = System.Text.RegularExpressions.Regex.Match(allCookies, @"VaultSession=([^;]+)");
                 if (match.Success && !string.IsNullOrEmpty(match.Groups[1].Value))
                 {
-                    // If an active user cookie is found on this PC, bounce them safely to the dashboard!
-                    Router.NavigateTo("dashboard");
+                    // FIXED DESTINATION: If cookie is active, bounce them safely to the nested sandbox
+                    Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
                 }
 
             }
             catch (Exception)
             {
                 // Fallback exit if any system anomalies pop up
-                Router.NavigateTo("dashboard");
+                Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
             }
         }
     }
@@ -128,8 +128,18 @@
             }
             catch (Exception) { }
 
+            // =========================================================================
+            // 🔑 RE-EXTEND THE CLEARANCE TOKEN FOR AUTHENTICATED REDIRECT
+            // =========================================================================
+            // Right before jumping back to the dashboard, we establish a fresh 5-minute
+            // window. When the dashboard re-initializes under your logged-in profile,
+            // the route guard will welcome you in cleanly.
+            var expirationTime = DateTime.UtcNow.AddMinutes(10);
+            await SessionVault.SetAsync("SandboxAccessExpiry", expirationTime.ToString("o"));
+
+
             await Task.Delay(1000);
-            Router.NavigateTo("dashboard");
+            Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
         }
         else
         {

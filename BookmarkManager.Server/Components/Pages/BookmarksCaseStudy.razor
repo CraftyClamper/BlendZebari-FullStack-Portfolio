@@ -156,10 +156,13 @@
 @code {
     private async Task UnlockAndNavigateToSandbox()
     {
-        // 🔑 Issue a temporary session-clearance pass code key
-        await SessionVault.SetAsync("SandboxAccessClearance", "Granted");
+        // 🔑 Calculate an exact 10-minute window from right now
+        var expirationTime = DateTime.UtcNow.AddMinutes(10);
 
-        // Routely transfer them onto the sub-path
+        // Save the timestamp into storage as an ISO string formatting parameter
+        await SessionVault.SetAsync("SandboxAccessExpiry", expirationTime.ToString("o"));
+
+        // Safely route into the workspace sub-path
         Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
     }
 }

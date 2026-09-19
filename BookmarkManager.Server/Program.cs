@@ -12,12 +12,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// 🚀 FIXED: Forces the SQLite database file to live directly inside your project folder root directory!
-string projectDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
-string databaseFullPath = System.IO.Path.Combine(projectDirectoryPath, "bookmarks.db");
+// =========================================================================
+// 🎯 PORTFOLIO PROGRESS SHOWCASE: MULTI-DATABASE ENGINE PIPELINE
+// =========================================================================
+// Set this to true when connecting to a live cloud/local PostgreSQL server instance,
+// or false to use the local single-file SQLite database sandbox!
+bool usePostgreSQL = false;
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite($"Data Source={databaseFullPath}"));
+if (usePostgreSQL)
+{
+    // 🚀 ENTERPRISE UPGRADE: PostgreSQL Network Server Environment
+    string pgConnectionString = "Host=localhost;Port=5432;Database=vaultdb;Username=postgres;Password=YourSecurePassword123;Include Error Detail=true;";
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(pgConnectionString));
+}
+else
+{
+    // 📁 LOCAL ARCHIVE: SQLite Single-File Environment
+    string projectDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+    string databaseFullPath = System.IO.Path.Combine(projectDirectoryPath, "bookmarks.db");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite($"Data Source={databaseFullPath}"));
+}
 
 // CRITICAL FIX: Registers your security engine globally so Login.razor can find it!
 builder.Services.AddScoped<AuthService>();
@@ -57,7 +73,9 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-// 🔒 UPDATED: Secure folder dropdown endpoint that requires user PIN validation
+// =========================================================================
+// 🤝 TRANSLATION-SAFE COLLABORATIVE EXTENSION DROPDOWN DIRECTORY GATEWAY
+// =========================================================================
 app.MapGet("/api/folders/list", async (string username, string extensionPin, ApplicationDbContext context, AuthService authService) =>
 {
     if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(extensionPin))
@@ -65,27 +83,36 @@ app.MapGet("/api/folders/list", async (string username, string extensionPin, App
         return Results.BadRequest("Missing required identity parameters.");
     }
 
-    // Find the specific user row context matching the active browser cookie session
     var targetUser = await context.Users
         .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
 
     if (targetUser == null) return Results.Unauthorized();
 
-    // CRYPTOGRAPHIC CHECK: Hash the incoming PIN text and compare it to this specific user's row
     string incomingPinHash = authService.HashText(extensionPin);
     if (targetUser.ExtensionPinHash != incomingPinHash)
     {
-        return Results.Unauthorized(); // Bounces them out if the PIN doesn't match this user account!
+        return Results.Unauthorized();
     }
 
-    // STRICT USER FILTER: Only grab folders belonging to this authenticated user row
-    var userFolders = await context.Folders
-        .Where(f => f.CreatedBy == targetUser.Id)
+    // 1. Fetch workspaces fully into memory first to unblock SQLite's translation walls
+    var rawWorkspaces = await context.Workspaces.ToListAsync();
+
+    // 2. Filter allowed workspaces using standard safe C# list logic
+    var collaborativeWorkspaceIds = rawWorkspaces
+        .Where(w => w.AllowedUserIds != null && w.AllowedUserIds.Contains(targetUser.Id))
+        .Select(w => w.Id)
+        .ToList();
+
+    // 3. 🤝 DYNAMIC DROPDOWN FILTER: Pull folders belonging to user or their collaborative assignments!
+    var visibleFolders = await context.Folders
+        .Where(f => f.CreatedBy == targetUser.Id || collaborativeWorkspaceIds.Contains(f.WorkspaceId))
         .Select(f => new { id = f.Id, name = f.Name })
         .ToListAsync();
 
-    return Results.Ok(userFolders);
+    return Results.Ok(visibleFolders);
 });
+
+
 
 
 // 🚀 bulletproof CAPTURE GATEWAY: Bypasses case-sensitivity walls completely to eliminate 400 errors
@@ -196,6 +223,52 @@ app.MapPost("/api/bookmarks/capture", async (System.Text.Json.JsonElement rawPay
     await syncHubContext.Clients.Group(userGroupName).SendAsync("TriggerLayoutRefresh");
 
     return Results.Ok(new { message = "Bookmark successfully saved to your private folder drawer!" });
+});
+
+// =========================================================================
+// 🤝 CORE FEATURE 6: REAL-TIME COLLABORATIVE WORKSPACE PERMISSIONS GATEWAY
+// =========================================================================
+app.MapPost("/api/workspaces/invite", async (System.Text.Json.JsonElement payload, ApplicationDbContext context, IHubContext<SyncHub> syncHubContext) =>
+{
+    string targetFriendName = payload.TryGetProperty("friendUsername", out var f) ? f.GetString() ?? "" : "";
+    int currentWorkspaceId = payload.TryGetProperty("workspaceId", out var w) ? w.GetInt32() : 0;
+
+    if (string.IsNullOrWhiteSpace(targetFriendName) || currentWorkspaceId == 0)
+    {
+        return Results.BadRequest("Missing collaboration context parameters.");
+    }
+
+    // 1. Locate the target friend profile row context records
+    var friendUser = await context.Users
+        .FirstOrDefaultAsync(u => u.Username.ToLower() == targetFriendName.ToLower());
+
+    if (friendUser == null)
+    {
+        return Results.NotFound(new { message = "❌ Requested user profile does not exist." });
+    }
+
+    // 2. Fetch the target workspace record
+    var targetWorkspace = await context.Workspaces
+        .FirstOrDefaultAsync(ws => ws.Id == currentWorkspaceId);
+
+    if (targetWorkspace == null) return Results.NotFound("Workspace context not found.");
+
+    // 3. Security Boundary: Prevent redundant duplicate index assignments
+    if (!targetWorkspace.AllowedUserIds.Contains(friendUser.Id))
+    {
+        targetWorkspace.AllowedUserIds.Add(friendUser.Id);
+        targetWorkspace.IsCollaborative = true;
+
+        context.Workspaces.Update(targetWorkspace);
+        await context.SaveChangesAsync();
+    }
+
+    // 4. SIGNALR LIVE COLLABORATION RECONCILIATION PULSE
+    // Forces the friend's running dashboard screen to instantly sync counts and redrawn rows
+    string friendSyncGroupName = $"UserSync_{friendUser.Username.ToLower()}";
+    await syncHubContext.Clients.Group(friendSyncGroupName).SendAsync("TriggerLayoutRefresh");
+
+    return Results.Ok(new { message = $"✓ Successfully invited {friendUser.Username} to your directory drawer!" });
 });
 
 // Added: Establishes the real-time network route path for your social workspaces

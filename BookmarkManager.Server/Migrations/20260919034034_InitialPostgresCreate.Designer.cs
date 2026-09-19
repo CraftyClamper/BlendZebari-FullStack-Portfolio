@@ -5,58 +5,67 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace BookmarkManager.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260815142240_AddDynamicFoldersTable")]
-    partial class AddDynamicFoldersTable
+    [Migration("20260919034034_InitialPostgresCreate")]
+    partial class InitialPostgresCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("BookmarkManager.Shared.Bookmark", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AiSummary")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("Category")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("CreatedBy")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.Property<int>("Folder")
-                        .HasColumnType("INTEGER");
+                    b.Property<int?>("FolderId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsViewed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Url")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("WorkspaceId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FolderId");
 
                     b.HasIndex("WorkspaceId");
 
@@ -67,20 +76,22 @@ namespace BookmarkManager.Server.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BookmarkId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -89,23 +100,53 @@ namespace BookmarkManager.Server.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("BookmarkManager.Shared.Folder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentFolderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentFolderId");
+
+                    b.ToTable("Folders");
+                });
+
             modelBuilder.Entity("BookmarkManager.Shared.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ExtensionPinHash")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -116,18 +157,20 @@ namespace BookmarkManager.Server.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.PrimitiveCollection<string>("AllowedUserIds")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AllowedUserIds")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsCollaborative")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -136,6 +179,11 @@ namespace BookmarkManager.Server.Migrations
 
             modelBuilder.Entity("BookmarkManager.Shared.Bookmark", b =>
                 {
+                    b.HasOne("BookmarkManager.Shared.Folder", null)
+                        .WithMany("Bookmarks")
+                        .HasForeignKey("FolderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("BookmarkManager.Shared.Workspace", null)
                         .WithMany("Bookmarks")
                         .HasForeignKey("WorkspaceId")
@@ -152,9 +200,24 @@ namespace BookmarkManager.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookmarkManager.Shared.Folder", b =>
+                {
+                    b.HasOne("BookmarkManager.Shared.Folder", null)
+                        .WithMany("SubFolders")
+                        .HasForeignKey("ParentFolderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("BookmarkManager.Shared.Bookmark", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("BookmarkManager.Shared.Folder", b =>
+                {
+                    b.Navigation("Bookmarks");
+
+                    b.Navigation("SubFolders");
                 });
 
             modelBuilder.Entity("BookmarkManager.Shared.Workspace", b =>

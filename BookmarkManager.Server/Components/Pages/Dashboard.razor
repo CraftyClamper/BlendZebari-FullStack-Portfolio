@@ -10,6 +10,8 @@
 @inject ProtectedLocalStorage SessionVault
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
+@inject HttpClient Http
+
 
 <PageTitle>My Secure Bookmarks Vault</PageTitle>
 
@@ -77,10 +79,19 @@
             <!-- 📁 SIDEBAR COLUMN: RECURSIVE FOLDER TREE -->
             <div class="col-12 col-md-4">
                 <div class="card shadow-sm border-0 rounded-3 p-4 bg-light">
+
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-secondary m-0">📁 Directories</h5>
                         <button class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold" @onclick="() => PromptCreateFolder(null)">
                             ➕ Add Main
+                        </button>
+                    </div>
+
+                    <!-- 🚀 UPDATED PLACEMENT: Sits right below the header line and binds seamlessly to your C# memory state tracker variable! -->
+                    <div class="input-group input-group-sm mb-3 shadow-sm rounded-pill bg-white overflow-hidden border">
+                        <input type="text" class="form-control border-0 ps-3 bg-white" @bind="friendInvitationNameInput" placeholder="Invite friend username..." />
+                        <button class="btn btn-dark border-0 px-3 fw-semibold rounded-pill m-1 py-1 d-flex align-items-center justify-content-center" @onclick="async () => await ExecuteFriendInvitation()">
+                            🤝 Invite
                         </button>
                     </div>
 
@@ -99,6 +110,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- 📖 MAIN PANEL COLUMN: SELECTED FOLDER CARDS GRID -->
             <div class="col-12 col-md-8">
@@ -372,23 +384,24 @@
                 {
                     loggedInUserId = userRow.Id;
 
-                    // 🚀 DYNAMIC MULTI-USER WORKSPACE LOOKUP:
-                    // Find or create a matching workspace entry matching this explicit user's vault row signature
+                    // 🚀 FIXED: String matching pattern updated to match Program.cs exactly!
                     var userWorkspace = await DbContext.Workspaces
-                        .FirstOrDefaultAsync(w => w.Name == $"{userRow.Username}'s Vault");
+                        .FirstOrDefaultAsync(w => w.Name == $"{userRow.Username}'s Vault Layout");
 
                     if (userWorkspace == null)
                     {
                         userWorkspace = new Workspace
                         {
-                            Name = $"{userRow.Username}'s Vault",
+                            Name = $"{userRow.Username}'s Vault Layout",
                             IsCollaborative = false
                         };
+                        userWorkspace.AllowedUserIds.Add(userRow.Id); // Ensure user is explicitly assigned to their list
                         DbContext.Workspaces.Add(userWorkspace);
                         await DbContext.SaveChangesAsync();
                     }
 
-                    userWorkspaceId = userWorkspace.Id; // Assign the dynamic layout integer here!
+                    userWorkspaceId = userWorkspace.Id;
+
                 }
             }
         }
@@ -436,11 +449,42 @@
 
     }
 
+    private string friendInvitationNameInput = string.Empty;
+
+    private async Task ExecuteFriendInvitation()
+    {
+        if (userWorkspaceId == 0 || loggedInUserId == 0 || string.IsNullOrWhiteSpace(friendInvitationNameInput)) return;
+
+        var payloadObj = new { friendUsername = friendInvitationNameInput, workspaceId = userWorkspaceId };
+
+        // 🚀 FIXED: Wrapped the relative endpoint string inside Router.ToAbsoluteUri()
+        // This dynamically forces the system to prepend your live localhost domain details!
+        var dynamicAbsoluteUri = Router.ToAbsoluteUri("/api/workspaces/invite");
+
+        var response = await Http.PostAsJsonAsync(dynamicAbsoluteUri, payloadObj);
+        friendInvitationNameInput = string.Empty;
+        await RefreshFolderTreeData();
+    }
+
+
+
     private async Task RefreshFolderTreeData()
     {
+        if (loggedInUserId == 0) return;
+
+        // 🤝 FIXED PIPELINE: Fetching the list completely from the database first
+        // to free up the thread channel context before evaluating elements in C#!
+        var rawWorkspaces = await DbContext.Workspaces.ToListAsync();
+
+        var collaborativeWorkspaceIds = rawWorkspaces
+            .Where(w => w.AllowedUserIds != null && w.AllowedUserIds.Contains(loggedInUserId))
+            .Select(w => w.Id)
+            .ToList();
+
+        // Query folders assigned to the verified workspace collection paths
         allFolders = await DbContext.Folders
             .Include(f => f.Bookmarks)
-            .Where(f => f.CreatedBy == loggedInUserId)
+            .Where(f => collaborativeWorkspaceIds.Contains(f.WorkspaceId))
             .ToListAsync();
 
         rootFolders = allFolders.Where(f => f.ParentFolderId == null).ToList();
@@ -455,13 +499,23 @@
             activeSelectedFolder = allFolders.FirstOrDefault(f => f.Id == activeSelectedFolder.Id);
             if (activeSelectedFolder != null)
             {
-                displayBookmarks = await DbContext.Bookmarks
-                    .Where(b => b.FolderId == activeSelectedFolder.Id)
+                var baseQuery = DbContext.Bookmarks
+                    .Where(b => b.FolderId == activeSelectedFolder.Id);
+
+                if (!showDislikedBookmarks)
+                {
+                    baseQuery = baseQuery.Where(b => b.Category != BookmarkCategory.Disliked);
+                }
+
+                displayBookmarks = await baseQuery
                     .OrderByDescending(b => b.Timestamp)
                     .ToListAsync();
             }
         }
     }
+
+
+
 
     private async Task SelectFolder(Folder folder)
     {
@@ -643,7 +697,7 @@
         // 3. Safely dismantle your real-time SignalR networking line connections
         if (hubConnection != null)
         {
-            await hubConnection.SendAsync("LeaveWorkspaceChat", userWorkspaceId); // 🚀 CHANGED: Leaves your unique room instead of 1
+            await hubConnection.SendAsync("LeaveWorkspaceChat", userWorkspaceId);
             await hubConnection.DisposeAsync();
             hubConnection = null;
         }
@@ -651,21 +705,31 @@
         // Clear out your active RAM lists context profiles
         loggedInUser = "Guest";
         loggedInUserId = 0;
-        userWorkspaceId = 0; // 🚀 CHANGED: Safely scrubs your workspace tracking key out of memory
-        activeSelectedFolder = null; // Unhighlights your selected folder index row
+        userWorkspaceId = 0;
+        activeSelectedFolder = null;
 
         // 2. SECURE RAM SCRUB ENGINE: Clear out your data cache arrays immediately!
         chatMessages.Clear();
-        displayBookmarks.Clear(); // Wipes all bookmark data cards out of active RAM!
-        rootFolders.Clear();       // Wipes the folder tree layout nodes out of active RAM!
-        allFolders?.Clear();       // Empties the complete master array cache container
+        displayBookmarks.Clear();
+        rootFolders.Clear();
+        allFolders?.Clear();
 
         // 4. Instantly force the HTML page layout to redraw its clean, empty skeleton state
         await InvokeAsync(StateHasChanged);
 
-        // 5. Direct the user safely back onto the clean root page layout path
-        Router.NavigateTo("dashboard");
+        // =========================================================================
+        // 🔑 NEW ADDITION: RE-EXTEND THE CLEARANCE TOKEN FOR GUEST VIEW RELOAD
+        // =========================================================================
+        // Because logging out forces a page refresh/redirect, we MUST extend the
+        // 5-minute sandbox clearance pass token. This ensures Blazor allows the user
+        // to view the safe "Guest View" instead of crashing into a "Not Found" screen.
+        var expirationTime = DateTime.UtcNow.AddMinutes(5);
+        await SessionVault.SetAsync("SandboxAccessExpiry", expirationTime.ToString("o"));
+
+        // 5. FIXED DESTINATION: Direct the user safely onto the true nested sandbox track
+        Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
     }
+
 
 
     public bool IsChatConnected => hubConnection?.State == HubConnectionState.Connected;
@@ -694,27 +758,36 @@
         {
             try
             {
-                // 🔍 Check if the temporary clearance token exists
-                var clearance = await SessionVault.GetAsync<string>("SandboxAccessClearance");
+                // 🔍 Retrieve the time stamp token string from session vault lines
+                var expiryResult = await SessionVault.GetAsync<string>("SandboxAccessExpiry");
 
-                if (!clearance.Success || clearance.Value != "Granted")
+                if (expiryResult.Success && DateTime.TryParse(expiryResult.Value, out var expiryTime))
                 {
-                    // 🛑 BLOCKED: They tried to bypass the funnel. Bounce them straight back to the Case Study!
-                    Router.NavigateTo("portfolio/bookmarks-vault");
-                    return;
-                }
+                    // 🛑 Check if the current time has surpassed the 5-minute allowance window
+                    if (DateTime.UtcNow > expiryTime)
+                    {
+                        await SessionVault.DeleteAsync("SandboxAccessExpiry");
+                        Router.NavigateTo("portfolio/bookmarks-vault");
+                        return;
+                    }
 
-                // 🧼 ONE-TIME USE SCRUB: Wipe the clearance pass token instantly from memory.
-                // This means if they bookmark this URL, hit F5, or share it, it will fail and force them back.
-                await SessionVault.DeleteAsync("SandboxAccessClearance");
+                    // ✅ SUCCESS: They are within the 10-minute window!
+                    // Do NOT delete the token here. This allows logins, logouts, and F5 refreshes to work perfectly.
+                    StateHasChanged();
+                }
+                else
+                {
+                    // No token found at all. Send them back to the start of the funnel.
+                    Router.NavigateTo("portfolio/bookmarks-vault");
+                }
             }
             catch (Exception)
             {
-                // Fallback safety exit to keep dashboard completely locked down
                 Router.NavigateTo("portfolio/bookmarks-vault");
             }
         }
     }
+
 
 }
 
