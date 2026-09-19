@@ -23,10 +23,12 @@ My engineering methodology bridges strong academic theory with practical product
 
 This portfolio repository is divided into isolated modular sub-directories. Each project folder houses its own respective source trees, configuration states, and specialized deployment guidelines.
 
-### 🧭 Project 1: Cross-Platform Web Syncing Ecosystem
+### 🧭 Project 1: Real-Time Collaborative Web Syncing Ecosystem
 *   **Directory Location:** `./BookmarkManager/`
-*   **Core Tech Stack:** `C#`, `Blazor Server (.NET 8/9)`, `SignalR WebSockets`, `Manifest V3 Chrome Extension`, `SQLite`
-*   **Systems Breakdown:** A full-stack environment that hooks a native browser helper extension directly into a secure Blazor multi-tenant storage locker. Features a custom browser cookie authorization bridge (`VaultSession`), automated background page scraping description pipelines, a custom `List<int>` database type converter, and automatic cascading tree data deletion logic.
+*   **Core Tech Stack:** `C#`, `Blazor Server (.NET 10)`, `SignalR WebSockets`, `Manifest V3 Chrome Extension`, `EF Core`, `SQLite` / `PostgreSQL` [0.1.15, 0.1.19, 4].
+*   **Systems Breakdown:** A full-stack, secure multi-tenant dashboard connected directly to a native browser extension helper bridge. This architecture utilizes a secure cookie authorization layer (`VaultSession`), a custom `System.Text.Json` value converter to map primitive arrays (`List<int>`) into flat text columns, and automated background page scraping pipelines.
+*   **Collaborative Features:** Engineered a cross-user invitation permissions gateway (`/api/workspaces/invite`) backed by background multi-cast radio groups. Multiple permitted users can create, read, view, and append bookmark nodes inside the same shared directory layout simultaneously.
+*   **Dual-Database Transition Layout:** Built a custom compilation toggle switch block inside `Program.cs` supporting a seamless, archive-safe architectural upgrade path transitioning the storage engine from local development file handling (`SQLite`) over to enterprise network server clusters (`PostgreSQL`).
 *   👉 [Examine Detailed Project Architecture Guide](./BookmarkManager/README.md) *(Link to internal folder documentation)*
 
 ### 🎮 Project 2: Interactive Game Architecture
@@ -47,7 +49,7 @@ This portfolio repository is divided into isolated modular sub-directories. Each
 I specialize in packaging highly customized, production-ready software components on strict fixed delivery timelines. Whether you require a full-stack corporate interface block, an optimization pass on an e-commerce platform, or a native cross-platform application layer, I offer pre-configured contract brackets.
 
 ### Core Contract Deliverables (Available via Fiverr):
-1.  **Logic Repair & Component Engineering:** Islating critical runtime script errors, modifying method structures, and deploying reusable interface blocks.
+1.  **Logic Repair & Component Engineering:** Isolating critical runtime script errors, modifying method structures, and deploying reusable interface blocks.
 2.  **Full Feature Schema Integration:** Designing comprehensive dashboard routes, generating Entity Framework object mappings, and configuring custom database validation models.
 3.  **Cross-App Pipeline Design:** Connecting background utilities, browser helper clients, native device APIs, and real-time WebSocket communication lines.
 
