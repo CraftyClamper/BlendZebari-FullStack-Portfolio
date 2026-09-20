@@ -1,9 +1,9 @@
-using BookmarkManager.Server.Components;
+using Portfolio.Server.Components;
 using Microsoft.EntityFrameworkCore; // Added: Brings in database functionality
-using BookmarkManager.Server;
 using BookmarkManager.Shared;        // Added: Links to your ApplicationDbContext file
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
+using Portfolio.Server.BookmarkManagerInfrastructure;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +72,11 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// =========================================================================
+// 🧭 DETACHED APP MODULE: BOOKMARK MANAGER ENGINE CORE
+// =========================================================================
+#region Bookmark Manager Module
 
 // =========================================================================
 // 🤝 TRANSLATION-SAFE COLLABORATIVE EXTENSION DROPDOWN DIRECTORY GATEWAY
@@ -277,10 +282,13 @@ app.MapHub<ChatHub>("/chathub");
 // Added: Establishes the real-time network route path for your sync engine
 app.MapHub<SyncHub>("/synchub");
 
+#endregion
+
 // 1. Fire up the server engine first!
 app.Run();
 
-// The helper record updated with precise system serialization attributes to stop 400 bad request errors
+// The helper record for bookmarkmanager project.
+// Updated with precise system serialization attributes to stop 400 bad request errors
 public record BookmarkPayload(
     [property: JsonPropertyName("url")] string Url,
     [property: JsonPropertyName("title")] string? Title,

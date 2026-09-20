@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
-namespace BookmarkManager.Server
+namespace Portfolio.Server.BookmarkManagerInfrastructure
 {
     // Professional isolated real-time background sync tower
     public class SyncHub : Hub

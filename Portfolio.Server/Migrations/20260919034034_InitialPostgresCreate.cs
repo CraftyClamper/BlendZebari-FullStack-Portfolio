@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BookmarkManager.Server.Migrations
+namespace Portfolio.Server.Migrations
 {
     /// <inheritdoc />
     public partial class InitialPostgresCreate : Migration

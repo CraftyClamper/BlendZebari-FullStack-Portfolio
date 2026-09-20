@@ -3,7 +3,7 @@ using BookmarkManager.Shared;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BookmarkManager.Server
+namespace Portfolio.Server.BookmarkManagerInfrastructure
 {
     public class AuthService
     {

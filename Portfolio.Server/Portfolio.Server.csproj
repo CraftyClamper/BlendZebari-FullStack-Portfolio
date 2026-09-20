@@ -5,7 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
-	<NuGetAudit>false</NuGetAudit> <!-- Added: Stops warnings from crashing migrations! -->
+    <NuGetAudit>false</NuGetAudit> <!-- Added: Stops warnings from crashing migrations! -->
+    
+    <!-- 🏢 CRITICAL REPAIR TAGS: Enforces the clean CSS bundling compilation name! -->
+    <AssemblyName>Portfolio.Server</AssemblyName>
+    <RootNamespace>Portfolio.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

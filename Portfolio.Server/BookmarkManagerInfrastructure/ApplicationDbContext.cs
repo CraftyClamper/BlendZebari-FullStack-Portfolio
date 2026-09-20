@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json; // 🚀 ADDED: Required for converting lists to text strings
 
-namespace BookmarkManager.Server
+namespace Portfolio.Server.BookmarkManagerInfrastructure
 {
     public class ApplicationDbContext : DbContext
     {

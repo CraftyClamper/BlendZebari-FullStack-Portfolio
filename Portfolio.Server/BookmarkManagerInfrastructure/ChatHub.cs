@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
-namespace BookmarkManager.Server
+namespace Portfolio.Server.BookmarkManagerInfrastructure
 {
     // Professional isolated real-time workspace chat router
     public class ChatHub : Hub
