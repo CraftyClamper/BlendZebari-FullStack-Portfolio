@@ -18,7 +18,7 @@
         </span>
         <h1 class="fw-black text-dark display-4 mb-2">An Enhanced Bookmark Manager</h1>
         <p class="lead text-muted">
-            A cross-platform web ecosystem integrating a <strong>Manifest V3 Chrome Extension</strong> with an <strong>ASP.NET Core Blazor Web App</strong>.
+            A cross-platform web ecosystem integrating a <strong>Manifest V3 Chrome Extension</strong> with an <strong>ASP.NET Core Blazor Web App (.NET 10)</strong>.
         </p>
     </div>
 
@@ -46,19 +46,19 @@
         <div class="col-6 col-md-3">
             <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
                 <h5 class="fw-bold text-success m-0">SignalR</h5>
-                <small class="text-muted extra-small d-block mt-1">Real-Time Social Hub</small>
+                <small class="text-muted extra-small d-block mt-1">Real-Time Social Hubs</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
-                <h5 class="fw-bold text-warning m-0">AI Digest</h5>
-                <small class="text-muted extra-small d-block mt-1">LLM Web Scraping</small>
+                <h5 class="fw-bold text-warning m-0">.NET 10</h5>
+                <small class="text-muted extra-small d-block mt-1">Blazor Backend Engine</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="p-3 bg-light rounded text-center border-0 shadow-sm h-100">
                 <h5 class="fw-bold text-danger m-0">EF Core</h5>
-                <small class="text-muted extra-small d-block mt-1">PostgreSQL Data Layer</small>
+                <small class="text-muted extra-small d-block mt-1">SQLite & PostgreSQL Layer</small>
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
             Standard browser bookmarking systems lack automation, extensive categorization capabilities, and structure. Users are forced to organize directories manually, and static links offer zero insights into updated content.
         </p>
         <p class="text-secondary">
-            This ecosystem fixes that by introducing a global cross-platform sync architecture. Using a <strong>Manifest V3 Chrome Extension</strong> and a standalone <strong>Blazor Web App Dashboard</strong>, users can instantly capture metadata, auto-generate AI content summaries, track reading states, and collaborate on shared workspaces in real time.
+            This ecosystem fixes that by introducing a global cross-platform sync architecture. Using a <strong>Manifest V3 Chrome Extension</strong> and a standalone <strong>Blazor Web App Dashboard (.NET 10)</strong>, users can instantly capture metadata, auto-generate AI content summaries, track reading states, and collaborate on shared workspaces in real time.
         </p>
     </div>
 
@@ -82,7 +82,7 @@
                 <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
                     <h5 class="fw-bold text-dark">🔄 Cross-Platform Data Ingestion</h5>
                     <p class="small text-muted m-0">
-                        Built a specialized sync pipeline. The Chrome Extension intercepts active page metadata on a user keyboard shortcut, packaging it into a JSON payload transmitted securely to the Blazor backend web API.
+                        Built a specialized sync pipeline. The Chrome Extension intercepts active page metadata on a user keyboard shortcut, packaging it into a JSON payload transmitted securely to the Blazor backend web API endpoints.
                     </p>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                 <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
                     <h5 class="fw-bold text-dark">⚡ SignalR Real-Time Collaboration</h5>
                     <p class="small text-muted m-0">
-                        Implements real-time workspace collaboration. Multiple users can edit directory indices simultaneously. SignalR broadcasts comments, cursor rules, and node changes across active client stations instantly.
+                        Implements real-time workspace collaboration via SignalR WebSockets. Multiple users can edit directory indices simultaneously. The pipeline broadcasts folder invitations, comments, and node changes across active client stations instantly.
                     </p>
                 </div>
             </div>
@@ -104,9 +104,9 @@
             </div>
             <div class="col-md-6">
                 <div class="card h-100 border-0 bg-light p-4 rounded-3 shadow-none">
-                    <h5 class="fw-bold text-dark">🛡️ Privacy Guard & Filtering</h5>
+                    <h5 class="fw-bold text-dark">🛡️ Relational Storage & Custom Type-Converters</h5>
                     <p class="small text-muted m-0">
-                        Features local password locking to encrypt the local UI view layer on Chrome, combined with a Steam-style filter engine that dynamically auto-hides disliked assets from the workspace view.
+                        Features custom array type-converters in Entity Framework Core to cleanly support array-serialization inside an isolated SQLite database environment, engineered alongside a modular setup for flawless migrations to PostgreSQL.
                     </p>
                 </div>
             </div>
@@ -117,10 +117,10 @@
     <div class="my-5 p-4 border rounded-3 bg-white">
         <h4 class="fw-bold text-dark mb-3">🔄 The Lifecycle of a Saved Bookmark</h4>
         <ol class="text-secondary small space-y-2 mb-0">
-            <li class="mb-2"><strong>Capture:</strong> Extension intercepts page DOM/metadata via shortcut listener and ships JSON to the Blazor API.</li>
-            <li class="mb-2"><strong>Processing:</strong> Blazor server processes the data stream, triggering an asynchronous LLM background call to produce an <code>AiSummary</code>.</li>
-            <li class="mb-2"><strong>Database Commits:</strong> Entity Framework Core saves the unified entity model record securely into a relational database cluster.</li>
-            <li><strong>Live Propagation:</strong> Connected client dashboards receive an instantaneous live interface update via persistent SignalR hub sockets without forcing a page refresh.</li>
+            <li class="mb-2"><strong>Capture:</strong> Extension intercepts page DOM/metadata via shortcut listener and ships JSON payloads to the Blazor backend framework.</li>
+            <li class="mb-2"><strong>Processing:</strong> Blazor server processes the incoming data stream, triggering an asynchronous LLM background call to produce an <code>AiSummary</code>.</li>
+            <li class="mb-2"><strong>Database Commits:</strong> Entity Framework Core handles model parsing, running custom type-converters to map array structures cleanly into the relational database engine.</li>
+            <li><strong>Live Propagation:</strong> Connected client dashboards receive an instantaneous live interface view layer update via persistent SignalR hub sockets without forcing a page refresh.</li>
         </ol>
     </div>
 
@@ -166,3 +166,4 @@
         Router.NavigateTo("portfolio/bookmarks-vault/sandbox");
     }
 }
+
