@@ -1,0 +1,257 @@
+﻿@page "/ecosystem-simulator"
+@using Portfolio.Server.EnterpriseEcosystemSimulator
+
+<div class="container mt-4">
+    <div class="p-3 mb-4 bg-light rounded-3 border">
+        <h3 class="display-6 fw-bold text-dark">🏢 Microsoft Enterprise Ecosystem & Audit Simulator</h3>
+        <p class="col-md-12 text-muted">
+            This module simulates the pro-development execution lifecycle of <strong>Dynamics 365 CE, Dataverse, Power Automate, SharePoint, and Compliance Audit Tracking</strong> entirely within an isolated C# .NET environment.
+        </p>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Interactive Power Apps Form -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm border-secondary mb-4">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    📝 Power Apps Entry Form (Create / Update)
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(uiValidationError))
+                    {
+                        <div class="alert alert-warning py-2 small fw-bold mb-3">
+                            ⚠️ @uiValidationError
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Account Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" @bind="accountName" placeholder="Type company name here..." disabled="@isRecordActive" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Credit Limit ($) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" @bind="creditLimit" placeholder="Type credit limit amount..." />
+                    </div>
+
+                    @if (!isRecordActive)
+                    {
+                        <button class="btn btn-success w-100 py-2 fw-bold shadow-sm" @onclick="CreateRecordPipeline">
+                            🚀 Fire Dataverse Create Pipeline
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-warning flex-grow-1 py-2 fw-bold text-dark shadow-sm" @onclick="UpdateRecordPipeline">
+                                🔧 Modify Credit Limit (Fires Audit Update)
+                            </button>
+                            <button class="btn btn-outline-danger py-2" @onclick="ResetForm">Reset</button>
+                        </div>
+                        <div class="form-text text-success mt-2 small">
+                            🔒 <strong>Active Record Context:</strong> Editing account ID: <code>@activeEntity?.Id.ToString().Substring(0,8)</code>. Changing this value will trigger an internal Dataverse audit delta comparison.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Right Column: System Telemetry Output Monitor -->
+        <div class="col-md-7 mb-4">
+            <div class="card shadow-sm border-dark h-100">
+                <div class="card-header bg-dark text-success fw-bold font-monospace d-flex justify-content-between align-items-center">
+                    <span>📡 System Telemetry Output Monitor</span>
+                    <button class="btn btn-sm btn-outline-secondary text-light btn-xs" @onclick="ClearConsole">Clear</button>
+                </div>
+                <div class="card-body bg-dark text-light p-3 font-monospace" style="min-height: 280px; max-height: 380px; overflow-y: auto;">
+                    @if (terminalLogs.Count == 0)
+                    {
+                        <div class="text-muted small italic">System idle. Awaiting operational input triggers from frontend form layer...</div>
+                    }
+                    else
+                    {
+                        @foreach (var log in terminalLogs)
+                        {
+                            <div class="mb-1 small @GetTextClass(log.Type)">@log.Message</div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Real-Time Audit History Grid (Mimicking Dynamics 365 Audit History View) -->
+    <div class="row mt-2">
+        <div class="col-12">
+            <!-- 💡 ARCHITECTURAL VISUALIZATION DISCLAIMER TEXT -->
+            <div class="alert alert-info py-2 px-3 small border-info mb-3 d-flex align-items-center shadow-sm">
+                <span class="me-2">ℹ️</span>
+                <span><strong>Architectural Note:</strong> This ledger operates on a high-performance <em>In-Memory Volatile Simulation Cycle</em> to allow immediate runtime execution tracing without data-persistence overhead.</span>
+            </div>
+
+            <div class="card shadow-sm border-info">
+                <div class="card-header bg-info text-white fw-bold">
+                    📋 Dynamics 365 Style System Audit Ledger History
+                </div>
+                <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                    @if (!DataversePipeline.GlobalAuditTable.Any())
+                    {
+                        <div class="p-4 text-center text-muted italic small">No audit logs written to transaction table records yet. Try successfully executing a pipeline above.</div>
+                    }
+                    else
+                    {
+                        <table class="table table-hover table-striped mb-0 table-sm align-middle small">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Audit Event ID</th>
+                                    <th>Timestamp (UTC)</th>
+                                    <th>Operation</th>
+                                    <th>Entity Target</th>
+                                    <th>Field Modification Delta Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var audit in DataversePipeline.GlobalAuditTable)
+                                {
+                                    <tr>
+                                        <td class="font-monospace text-muted">@audit.AuditId.ToString().Substring(0, 13)...</td>
+                                        <td>@audit.ChangedOn.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            <span class="badge @(audit.Action == "Create" ? "bg-success" : "bg-warning text-dark")">
+                                                @audit.Action.ToUpper()
+                                            </span>
+                                        </td>
+                                        <td class="font-monospace text-primary">@audit.EntityName (@audit.RecordId.ToString().Substring(0, 8))</td>
+                                        <td>
+                                            @foreach (var change in audit.ChangedAttributes)
+                                            {
+                                                <div class="font-monospace border-bottom py-1">
+                                                    <strong>@change.Key:</strong> <span class="text-secondary">@change.Value</span>
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string accountName = "";
+    private int? creditLimit = null;
+    private string uiValidationError = "";
+
+    private bool isRecordActive = false;
+    private CrmEntity? activeEntity = null;
+
+    private List<LogEntry> terminalLogs = new();
+    private string physicalStorageRoot = AppDomain.CurrentDomain.BaseDirectory;
+
+    public class LogEntry
+    {
+        public required string Message { get; set; }
+        public required string Type { get; set; }
+    }
+
+    private void LogToUi(string message, string type)
+    {
+        InvokeAsync(() =>
+        {
+            terminalLogs.Add(new LogEntry { Message = $"[{DateTime.Now.ToString("HH:mm:ss")}] {message}", Type = type });
+            StateHasChanged();
+        });
+    }
+
+    private void CreateRecordPipeline()
+    {
+        if (!ValidateForm() || !creditLimit.HasValue) return;
+
+        var dataverse = new DataversePipeline(LogToUi, physicalStorageRoot);
+        var powerAutomate = new PowerAutomateEngine(LogToUi);
+
+        activeEntity = new CrmEntity("account");
+        activeEntity.Attributes.Add("name", accountName.Trim());
+        activeEntity.Attributes.Add("creditlimit", creditLimit.Value);
+
+        try
+        {
+            dataverse.ProcessTransaction("Create", activeEntity, null); // explicit allowed null pre-image passing
+            powerAutomate.TriggerCloudFlow("On_Account_Created_Sync_Alert", activeEntity.Id);
+            isRecordActive = true;
+        }
+        catch (Exception ex)
+        {
+            LogToUi($"🔴 CRITICAL SYSTEM ROLLBACK FAULT: {ex.Message}", "error");
+            activeEntity = null;
+        }
+    }
+
+    private void UpdateRecordPipeline()
+    {
+        if (!creditLimit.HasValue || activeEntity == null)
+        {
+            uiValidationError = "Credit Limit is required to calculate modifications.";
+            return;
+        }
+
+        var dataverse = new DataversePipeline(LogToUi, physicalStorageRoot);
+        var powerAutomate = new PowerAutomateEngine(LogToUi);
+
+        var preImage = new CrmEntity("account") { Id = activeEntity.Id };
+        preImage.Attributes.Add("creditlimit", activeEntity.Attributes["creditlimit"]);
+
+        activeEntity.Attributes["creditlimit"] = creditLimit.Value;
+
+        try
+        {
+            dataverse.ProcessTransaction("Update", activeEntity, preImage);
+            powerAutomate.TriggerCloudFlow("On_Account_Field_Updated_Notification", activeEntity.Id);
+        }
+        catch (Exception ex)
+        {
+            LogToUi($"🔴 CRITICAL UPDATE TRANSACTION ABORTED: {ex.Message}", "error");
+            activeEntity.Attributes["creditlimit"] = preImage.Attributes["creditlimit"];
+            creditLimit = (int)preImage.Attributes["creditlimit"];
+        }
+    }
+
+    private bool ValidateForm()
+    {
+        uiValidationError = "";
+        if (string.IsNullOrWhiteSpace(accountName))
+        {
+            uiValidationError = "Account Name field is required to process transaction workflows.";
+            return false;
+        }
+        if (!creditLimit.HasValue)
+        {
+            uiValidationError = "Credit Limit is required. Please input a numerical value configuration.";
+            return false;
+        }
+        return true;
+    }
+
+    private void ResetForm()
+    {
+        accountName = "";
+        creditLimit = null;
+        uiValidationError = "";
+        isRecordActive = false;
+        activeEntity = null;
+    }
+
+    private void ClearConsole() => terminalLogs.Clear();
+
+    private string GetTextClass(string type) => type switch
+    {
+        "success" => "text-success",
+        "warning" => "text-warning fw-bold",
+        "error" => "text-danger fw-bold border-start border-danger ps-2",
+        _ => "text-info"
+    };
+}
+
