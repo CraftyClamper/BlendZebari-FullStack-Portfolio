@@ -1,0 +1,61 @@
+﻿@page "/"
+@inject NavigationManager Router
+
+<PageTitle>Blend Zebari | Fullstack .NET & Enterprise Systems Engineer</PageTitle>
+
+<!-- 🚀 HERO SECTION -->
+<div class="bg-dark text-white py-5 px-4 mb-5 rounded-3 shadow-sm border-bottom border-primary border-3">
+    <div class="container py-4 text-center">
+        <span class="badge bg-success px-3 py-2 rounded-pill mb-3 text-uppercase tracking-wider fw-bold" style="font-size: 0.75rem;">
+            🟢 Open for Freelance Gigs & Contract Development Roles
+        </span>
+        <h1 class="display-5 fw-bold mb-2" style="color: white;">Hi, I'm <span class="text-primary">Blend Zebari</span></h1>
+        <p class="lead text-muted mx-auto my-4 fs-6" style="max-width: 750px; line-height: 1.6;">
+            I am a full-stack developer specializing in building audited multi-tenant dashboards, real-time communication systems, automated web scraping tools, and enterprise ecosystem architectures using <strong>C#, .NET 10, Blazor, React, Node.js, and Chrome Extensions (Manifest V3)</strong>.
+        </p>
+        <div class="d-flex justify-content-center gap-2 mt-4 flex-wrap">
+            <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" @onclick='() => Router.NavigateTo("portfolio/bookmarks-vault")'>
+                📚 View Bookmarks Case Study
+            </button>
+            <button class="btn btn-outline-light rounded-pill px-4 fw-bold" @onclick='() => Router.NavigateTo("ecosystem-simulator")'>
+                🏢 Launch Enterprise Simulator
+            </button>
+            <button class="btn btn-secondary rounded-pill px-4 fw-bold" @onclick='() => Router.NavigateTo("resume")'>
+                📄 Review Professional CV
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 text-dark">
+    <!-- ⚙️ SYSTEM SHOWCASE TILES -->
+    <h3 class="fw-bold text-center mb-4">🚀 Primary Engineering Architecture Showcases</h3>
+    <div class="row g-4 text-start">
+        <!-- Bookmark Vault -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light p-4 rounded-3">
+                <span class="text-primary fw-bold text-uppercase small">Project Subsystem 1</span>
+                <h4 class="fw-bold mt-1 text-dark">Collaborative Bookmark Vault Ecosystem</h4>
+                <p class="text-muted small flex-grow-1" style="line-height: 1.6;">
+                    A cross-platform syncing network utilizing a custom-built Manifest V3 Google Chrome extension background client linked to a resilient ASP.NET Core Blazor web framework (.NET 10). Integrates multi-user collaboration hubs via SignalR WebSockets, custom EF Core type-converters for SQLite array serializations, and clean migrations to PostgreSQL.
+                </p>
+                <button class="btn btn-sm btn-outline-primary rounded-pill w-100 mt-3 fw-bold" @onclick='() => Router.NavigateTo("portfolio/bookmarks-vault")'>
+                    Read System Case Study →
+                </button>
+            </div>
+        </div>
+        <!-- Dataverse Simulator -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0 bg-light p-4 rounded-3">
+                <span class="text-warning fw-bold text-uppercase small">Project Subsystem 2</span>
+                <h4 class="fw-bold mt-1 text-dark">Microsoft Enterprise Ecosystem Simulator</h4>
+                <p class="text-muted small flex-grow-1" style="line-height: 1.6;">
+                    An isolated, zero-dependency C# .NET execution sandbox and real-time Blazor dashboard designed to simulate the pro-development execution lifecycle of the Microsoft Power Platform, Dynamics 365 CE, Dataverse Data Pipelines, asynchronous Power Automate Cloud Flows, and append-only Compliance Audit History Ledgers.
+                </p>
+                <button class="btn btn-sm btn-outline-warning text-dark rounded-pill w-100 mt-3 fw-bold" @onclick='() => Router.NavigateTo("ecosystem-simulator")'>
+                    Launch Core Engine Simulator →
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

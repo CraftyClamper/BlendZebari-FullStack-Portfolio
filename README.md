@@ -1,6 +1,6 @@
 # 🚀 The Software Engineering Portfolio of Blend Zebari
 
-Welcome to my full-stack development repository. I am a Systems Engineer holding a Bachelor’s Degree in Information Systems from Karlstad University. This repository showcases my capabilities across multi-tenant web ecosystems, background web scraping pipelines, real-time networking hubs, and custom enterprise e-commerce integrations.
+Welcome to my full-stack engineering and enterprise systems architecture repository. I am a Systems Engineer holding a Bachelor’s Degree in Information Systems from Karlstad University (Handelshögskolan). This repository showcases production-ready multi-tenant web ecosystems, real-time multiplexed communications, automated asynchronous data-ingestion workers, and native enterprise integration frameworks.
 
 [![Portfolio Live](https://shields.io)](#) 
 [![License](https://shields.io)](./LICENSE)
@@ -9,59 +9,54 @@ Welcome to my full-stack development repository. I am a Systems Engineer holding
 
 ## ⚙️ Core Technical Capabilities
 
-My engineering methodology bridges academic systems theory with production-ready deployments across several specialized software mediums:
+My engineering methodology bridges academic software systems theory with highly scalable, audited production deployments across three specialized disciplines:
 
-*   **Enterprise Web Apps:** Designing secure management dashboards, asynchronous API integration hubs, and persistent web socket networks (`C#`, `.NET 10`, `ASP.NET Core`, `Blazor`, `Node.js`, `Express`).
-*   **Data Architecture & Modeling:** Engineering optimized relational schemas, custom data serialization type-converters, and integrated background data-ingestion scrapers (`PostgreSQL`, `SQLite`, `EF Core`).
-*   **Commercial E-Commerce Systems:** Delivering deep storefront layout adaptations, optimized template scripts, and custom asset/plugin pipeline synchronizations (`Shopify Specialist`, `WordPress`, `PHP`).
-*   **Specialized Automation:** Structuring secure cross-platform client syncing workflows via Google Chrome browser extension runtime files (`Manifest V3`).
+*   **Enterprise Web Apps & Real-Time Hubs:** Designing secure management dashboards, full-duplex WebSocket routers, and cross-domain state token filters (`C#`, `.NET 10`, `ASP.NET Core`, `Blazor Server/WASM`, `React`, `TypeScript`, `Node.js`, `Express`).
+*   **Data Architecture & Compliance Engineering:** Engineering optimized relational schemas, custom data-serialization type-interceptors, pre-image audit delta ledgers, and background data-scraping workers (`PostgreSQL`, `SQLite`, `EF Core`, `Python`).
+*   **E-Commerce & Ecosystem Automation:** Customizing active enterprise storefront layers, template scripts, and custom plugin pipelines (`Shopify Specialist`, `WordPress`, `PHP`) paired with client runtime integrations via Google Chrome Extensions (`Manifest V3`).
 
 ---
 
-## 📁 Active Projects Showcase
+## 📁 Active Subsystem Showcases
 
-This repository is organized into modular sub-directories. Each project folder houses its own respective source trees, database configuration states, and standalone deployment guidelines.
+This repository is organized into modular sub-directories. Each project directory houses its own respective source trees, isolated database schemas, and standalone execution pipelines.
 
 ### 📚 Project 1: Real-Time Collaborative Bookmark Manager & Browser Extension
 *   **Directory Location:** `./BookmarkManager/`
 *   **Core Tech Stack:** `C#`, `Blazor Server/WASM (.NET 10)`, `SignalR WebSockets`, `Manifest V3 Chrome Extension`, `EF Core`, `SQLite` / `PostgreSQL`.
-*   **Systems Breakdown:** A full-stack, secure multi-tenant network syncing dashboard connected directly to a native browser extension helper client. This architecture utilizes secure cookie authorization layers, an external LLM web-scraping background worker that digests raw HTML into concise textual updates, and advanced local filtering logic.
-*   **Relational Storage & Custom Type-Converters:** Implemented specialized custom array type-converters inside Entity Framework Core to support direct array-serialization inside an isolated SQLite environment.
-*   **Dual-Database Transition Layout:** Built a flexible data configuration architecture supporting a seamless, archive-safe database upgrade path transitioning from a local development file footprint (`SQLite`) over to production network server clusters (`PostgreSQL`).
-*   **Collaborative Features:** Engineered a cross-user invitation permissions gateway backed by `SignalR Hubs`. Permitted users can create, read, view, and append bookmark nodes inside shared workspace folders simultaneously with instantaneous UI propagation.
-*   👉 [Examine Detailed Project Architecture Guide](./BookmarkManager/README.md)
+*   **Systems Breakdown:** A full-stack multi-tenant storage network connected to a native browser extension background helper. Features cross-user permissions gateways backed by SignalR Hubs (`SyncHub` / `ChatHub`) for instantaneous visual UI reload commands without viewport focus disruption.
+*   **Custom Interceptor Matrix:** Leverages custom `HasConversion` serialization type-converters inside Entity Framework Core to write primitive array types (`List<int>`) into an isolated SQLite footprint, providing a clean migration track to production PostgreSQL network server clusters.
+*   **Cross-Domain Security Handshake:** Implements a cookie handshake bridge via `chrome.cookies` matching the encrypted browser-wide `VaultSession` session identifier to authenticate operations from any active browser tab. Protected presentation funnels utilize one-time transient LocalStorage validation guards (`ButtonNavigationClearance` & `SandboxAccessExpiry`) to abort manual URL injection exploits.
+*   **Three-Tier Scraper Pipeline:** Features an asynchronous crawler pool (`MetadataScraper.cs`) utilizing specialized inner-script regex matching for YouTube configuration logs (`shortDescription`), universal `application/ld+json` parsing blocks, and baseline OpenGraph metadata fallbacks.
 
-### 🎮 Project 2: Interactive Game Architecture
-*   **Directory Location:** `./Project-Game/` *(Development Slot Open)*
-*   **Status:** 📅 `[ Planning Phase ]`
-*   **Target Core Concepts:** Real-time state replication, processing optimization paths, coordinate mapping trees, and asset memory pooling patterns.
-
-### 📱 Project 3: Native Mobile Application
-*   **Directory Location:** `./Project-Mobile/` *(Development Slot Open)*
-*   **Status:** 📅 `[ Concept Phase ]`
-*   **Target Core Concepts:** Local caching synchronization frameworks, secure offline storage persistence setups, and device biometric validation layers.
+### 🏢 Project 2: Microsoft Enterprise Ecosystem & Audit Simulator
+*   **Directory Location:** `./EnterpriseEcosystemSimulator/`
+*   **Core Tech Stack:** `C#`, `Blazor Server (.NET 10)`, `In-Memory Transactional Storage Engine`.
+*   **Systems Breakdown:** A high-performance pro-development simulation framework replicating the runtime lifecycle of **Dynamics 365 CE, Dataverse Data Pipelines, Power Automate Cloud Flows, and Compliance Audit Tracking**. 
+*   **Pre-Image Delta Tracking:** Implements an enterprise data layer tracking pre-images (`CrmEntity`) and post-images during record mutation streams to calculate precise property deltas (`ChangedAttributes`) before committing transactions.
+*   **Automation Loop Simulation:** Features an asynchronous orchestration client (`PowerAutomateEngine`) that intercepts entity row identity keys (`Id`) upon pipeline creation events to fire parallel cloud flow alert webhooks (`On_Account_Created_Sync_Alert`).
+*   **In-Memory Audit Ledger:** Maintains a volatile audit ledger ledger chain (`GlobalAuditTable`) tracking real-time transactional event histories, operation types, and data modification details across the simulated enterprise ecosystem.
 
 ---
 
 ## 💼 Professional Experience History
 
 *   **Affordable Luxurys** | *Shopify Specialist (Consulting Role)*
-    *   **Timeline:** 31 Augusti 2026 – 21 September 2026
-    *   **Impact:** Drev teknisk optimering and customized active theme components on an enterprise e-commerce platform. Developed specialized script parameters and synchronized plugin pipelines to maximize site performance, checkout speeds, and multi-device mobile alignment.
+    *   **Timeline:** 31 August 2026 – 21 September 2026
+    *   **Impact:** Executed technical performance optimizations and theme modifications on an enterprise commercial e-commerce platform. Developed specialized script parameters and synchronized asset pipelines to optimize site checkout speeds and multi-device mobile alignment.
 *   **Movz AB** | *Fullstack Developer (Karlstad Innovation Park)*
     *   **Timeline:** January 2025 – September 2025
-    *   **Impact:** Developed and optimized a business-critical administrative management dashboard leveraging React, TypeScript, and Node.js. Architected asynchronous REST API workflows for user-data synchronization and designed strict front-end validation structures using Formik and Yup.
+    *   **Impact:** Developed and optimized a business-critical administrative management dashboard using React, TypeScript, and Node.js. Architected asynchronous REST API workflows for real-time user-data synchronization and designed strict front-end validation schemas via Formik and Yup.
 *   **Kvarnbergsskolan** | *Teaching Assistant & Practicum Specialist (VFU)*
     *   **Timeline:** Spring 2026
-    *   **Impact:** Coordinated and executed primary educational frameworks focusing on structural language comprehension and applied mathematics (grades F-3). Acted as a dedicated mentor to help students break down complex logic into clear components, creating a comfortable and high-achieving classroom climate.
+    *   **Impact:** Coordinated and executed primary educational frameworks focusing on structural language comprehension and applied mathematics (grades F-3). Acted as a dedicated mentor to break down complex systems and logic into digestible, structured components.
 
 ---
 
-## 🎓 Higher Education & Background
-*   **Degree:** Bachelor of Science in Information Systems (Filosofie kandidatexamen i informatik) — **Karlstad University (Handelshögskolan)**.
-*   **Academic Project:** Completed a comprehensive independent **15 ECTS Bachelor's Thesis** within the core Web Developer (*Webbutvecklare*) study programme.
-*   **Core Academic Modules:** Systems Implementation Techniques, Database Design & Advanced Normalization, Object-Oriented Programming (UML Modeling), Human-Computer Interaction (UX/UI Prototyping), Business by Web & Digital Analytics, and Introduction to Artificial Intelligence.
-*   **International Alignment:** Extensive experience handling complex systems projects in English, building strong technical documentation fluency.
+## 🎓 Higher Education & Academic Background
+*   **Degree:** Bachelor of Science in Information Systems (*Filosofie kandidatexamen i informatik*) — **Karlstad University (Handelshögskolan)**.
+*   **Academic Thesis:** Completed a comprehensive independent **15 ECTS Bachelor's Thesis** within the core Web Developer (*Webbutvecklare*) study programme.
+*   **Core Academic Modules Completed:** Development of Web Applications, Server-side Programming in JavaScript, Database Design & Advanced Normalization, Object-Oriented Programming (UML Modeling), Systems Implementation Techniques, Human-Computer Interaction (UX/UI Prototyping), Business by Web & Digital Analytics, and Introduction to Artificial Intelligence.
 *   **Certificates:** Driving License (**B-Körkort**) & **Truckkort** (A1-4, B1-4, D1).
 
 ---

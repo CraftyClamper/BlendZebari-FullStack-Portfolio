@@ -1,0 +1,211 @@
+﻿@page "/resume"
+@inject NavigationManager Router
+
+<PageTitle>Blend Zebari | Professional Full-Stack CV</PageTitle>
+
+<div class="container my-5 shadow-sm p-4 p-md-5 bg-white rounded-3 border text-dark" style="max-width: 850px; line-height: 1.6;">
+
+    <!-- 📄 CV HEADER SUMMARY -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-4 mb-4">
+        <div>
+            <h1 class="fw-bold m-0" style="color: #212529;">Blend Zebari</h1>
+            <p class="text-primary fw-semibold m-0 fs-5">Fullstack Developer & Systems Engineer</p>
+            <small class="text-muted d-block mt-1">📍 Karlstad, Sweden</small>
+        </div>
+        <div class="text-md-end mt-3 mt-md-0 small text-muted">
+            <div class="mb-1">📧 <a href="mailto:z_blend@hotmail.com" class="text-decoration-none">z_blend@hotmail.com</a></div>
+            <div class="mb-1">📞 0739274884</div>
+            <span class="badge bg-light text-secondary border mt-1">🚗 Driving License (B-Körkort) & Truckkort (A1-4, B1-4, D1)</span>
+        </div>
+    </div>
+
+    <!-- 🎯 PROFESSIONAL OBJECTIVE -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-2" style="font-size: 0.9rem;">🎯 Professional Objective</h5>
+        <p class="text-muted small m-0" style="text-align: justify;">
+            Highly driven Fullstack Developer and Systems Engineer holding a Bachelor’s Degree in Information Systems from Karlstad University. Experienced in engineering business-critical web management dashboards, real-time WebSocket pipelines, automated data-ingestion workers, and native enterprise ecosystem adapters. Proven capability in translating complex architectural requirements into high-performance, audited production solutions.
+        </p>
+    </div>
+
+    <!-- 🛠️ COMPLETE TECH STACK OVERVIEW -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-3" style="font-size: 0.9rem;">⚙️ Technical Ecosystem Stack</h5>
+        <div class="row g-3 text-start">
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded-3 h-100 border shadow-sm">
+                    <h6 class="fw-bold text-primary mb-2" style="font-size: 0.85rem;">Backend & Real-Time</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">C# / .NET 10</span>
+                        <span class="badge bg-dark extra-small">ASP.NET Core</span>
+                        <span class="badge bg-dark extra-small">SignalR Hubs</span>
+                        <span class="badge bg-dark extra-small">Node.js / Express</span>
+                        <span class="badge bg-dark extra-small">REST API Design</span>
+                        <span class="badge bg-dark extra-small">Python</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded-3 h-100 border shadow-sm">
+                    <h6 class="fw-bold text-success mb-2" style="font-size: 0.85rem;">Frontend & E-Commerce</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">Blazor (Server/WASM)</span>
+                        <span class="badge bg-dark extra-small">React</span>
+                        <span class="badge bg-dark extra-small">TypeScript</span>
+                        <span class="badge bg-dark extra-small">JavaScript (ES6+)</span>
+                        <span class="badge bg-success extra-small text-white">Shopify Theme Dev</span>
+                        <span class="badge bg-success extra-small text-white">WordPress / PHP</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-light rounded-3 h-100 border shadow-sm">
+                    <h6 class="fw-bold text-warning mb-2" style="font-size: 0.85rem;">Data & Automation</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span class="badge bg-dark extra-small">PostgreSQL</span>
+                        <span class="badge bg-dark extra-small">SQLite / SQL</span>
+                        <span class="badge bg-dark extra-small">EF Core Value Converters</span>
+                        <span class="badge bg-dark extra-small">Manifest V3 Extensions</span>
+                        <span class="badge bg-dark extra-small">Web Scraping</span>
+                        <span class="badge bg-dark extra-small">Git / Visual Studio</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🚀 FEATURED TECHNICAL PROJECTS -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-3" style="font-size: 0.9rem;">💻 Featured Technical Projects</h5>
+
+        <!-- Project 1 -->
+        <div class="mb-4 border-start border-primary border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Real-Time Collaborative Bookmark Manager & Extension</h6>
+                <span class="badge bg-dark text-white extra-small px-2 py-1">Full-Stack Ecosystem</span>
+            </div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Engineered a secure, multi-tenant link-ingestion network syncing native browser actions with a cloud web dashboard in real time.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Built a <strong>Manifest V3 Google Chrome Extension</strong> that captures tab parameters and utilizes a secure <code>chrome.cookies</code> handshake to cross-authenticate active user sessions.</li>
+                <li>Architected full-duplex communication lines using <strong>SignalR WebSockets</strong> to isolate group chat rooms and push silent background refresh commands to active UI viewports.</li>
+                <li>Implemented a custom <code>HasConversion</code> value-serialization interceptor in <strong>EF Core</strong> to map complex primitive collections inside local SQLite deployments, ensuring a transparent migration path to PostgreSQL clusters.</li>
+            </ul>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="mb-4 border-start border-warning border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Microsoft Enterprise Ecosystem & Audit Simulator</h6>
+                <span class="badge bg-dark text-white extra-small px-2 py-1">Sandbox Engineering</span>
+            </div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Designed a zero-dependency C# simulation harness replicating the transactional state patterns and data loops of enterprise cloud architectures.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Simulated the execution pipeline of a <strong>Dataverse Data Pipeline</strong>, enforcing Pre-Validation business boundaries and evaluating record pre-images against live attributes to compute modification deltas.</li>
+                <li>Engineered an asynchronous, decoupled <strong>Power Automate Cloud Flow Engine</strong> utilizing a thread-safe <code>ConcurrentQueue</code> to process background notification scripts off the host thread stack.</li>
+                <li>Integrated physical disk-writing routines using standard filesystem utilities to map active records onto a mock SharePoint document hierarchy.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- 💼 PROFESSIONAL ENGINEERING HISTORY -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-3" style="font-size: 0.9rem;">💼 Professional Experience</h5>
+
+        <!-- AFFORDABLE LUXURYS -->
+        <div class="mb-4 border-start border-success border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Shopify Specialist (Consulting Role)</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Affordable Luxurys</span>
+            </div>
+            <div class="extra-small text-primary fw-semibold mb-2">31 August 2026 – 21 September 2026</div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Drove targeted technical performance optimizations and template adjustments on an enterprise commercial e-commerce platform to improve multi-device responsiveness and conversion speeds.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Developed custom child themes, specialized scripting arrays, and checkout fluid styling layout properties.</li>
+                <li>Synchronized external backend plugin pipelines to maximize data asset preservation and reduce platform latency.</li>
+            </ul>
+        </div>
+
+        <!-- MOVZ AB -->
+        <div class="mb-4 border-start border-primary border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Fullstack Developer</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Movz AB — Karlstad Innovation Park</span>
+            </div>
+            <div class="extra-small text-primary fw-semibold mb-2">January 2025 – September 2025</div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Architected and optimized a business-critical administrative management dashboard application leveraging React, TypeScript, and Node.js.
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Designed asynchronous REST API network transaction layers to handle high-throughput multi-tenant data syncing.</li>
+                <li>Built strict front-end state data evaluation and input checking rules using Formik and Yup validation structures.</li>
+            </ul>
+        </div>
+
+        <!-- KVARNBERGSSKOLAN -->
+        <div class="border-start border-secondary border-3 ps-3">
+            <div class="d-flex justify-content-between flex-wrap align-items-center mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Teaching Assistant & Practicum Specialist (VFU)</h6>
+                <span class="badge bg-light text-muted border extra-small px-2 py-1">Kvarnbergsskolan</span>
+            </div>
+            <div class="extra-small text-primary fw-semibold mb-2">Spring 2026</div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Coordinated and executed primary educational frameworks focusing on structural language comprehension and applied mathematics (grades F-3).
+            </p>
+            <ul class="extra-small text-muted ps-3 space-y-1">
+                <li>Acted as a dedicated technical mentor to help students break down complex logic into clear, bite-sized components.</li>
+                <li>Built strong relationship lines during educational intervals to cultivate a high-achieving classroom environment.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 🎓 HIGHER EDUCATION SEGMENT -->
+    <div class="mb-5">
+        <h5 class="fw-bold text-uppercase text-secondary tracking-wide mb-2" style="font-size: 0.9rem;">🎓 Higher Education</h5>
+        <div class="ps-1">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-1">
+                <h6 class="fw-bold text-dark m-0 fs-6">Bachelor of Science in Information Systems (Filosofie kandidatexamen i informatik - 180 ECTS)</h6>
+                <span class="text-muted extra-small fw-semibold">Karlstad University (Handelshögskolan) — Conferred Nov 2022</span>
+            </div>
+            <p class="text-muted small mb-2" style="text-align: justify;">
+                Completed the comprehensive **Web Developer (Webbutvecklare)** study programme, including an independent 15 ECTS Bachelor's thesis research project.
+            </p>
+
+            <div class="p-3 bg-light rounded border">
+                <small class="fw-bold text-secondary text-uppercase d-block mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">Official Transcript Core Modules:</small>
+                <div class="row g-2 extra-small text-muted">
+                    <div class="col-md-6">
+                        <ul class="mb-0 ps-3">
+                            <li>✔️ Development of Web Applications (7.5 ECTS)</li>
+                            <li>✔️ Serverside Programming in JavaScript (5.0 ECTS)</li>
+                            <li>✔️ Database Design (7.5 ECTS)</li>
+                            <li>✔️ Systems Implementation Techniques (5.0 ECTS)</li>
+                            <li>✔️ Introductory & object-oriented programming</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0 ps-3">
+                            <li>✔️ Information Systems - Bachelor's thesis (15 ECTS)</li>
+                            <li>✔️ Business by Web and Web Analytics (7.5 ECTS)</li>
+                            <li>✔️ User tests, prototyping and evaluation (7.5 ECTS)</li>
+                            <li>✔️ Introduction to Artificial Intelligence (7.5 ECTS)</li>
+                            <li>✔️ Object-Oriented Modeling (7.5 ECTS)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .extra-small {
+        font-size: 0.75rem !important;
+    }
+</style>
+
