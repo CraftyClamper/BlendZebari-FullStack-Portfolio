@@ -22,7 +22,7 @@ My engineering methodology bridges academic software systems theory with highly 
 This repository is organized into modular sub-directories. Each project directory houses its own respective source trees, isolated database schemas, and standalone execution pipelines.
 
 ### 📚 Project 1: Real-Time Collaborative Bookmark Manager & Browser Extension
-*   **Directory Location:** `./BookmarkManagerInfrastructure/`
+*   **Directory Location:** `./BookmarkManager/`
 *   **Core Tech Stack:** `C#`, `Blazor Server/WASM (.NET 10)`, `SignalR WebSockets`, `Manifest V3 Chrome Extension`, `EF Core`, `SQLite` / `PostgreSQL`.
 *   **Systems Breakdown:** A full-stack multi-tenant storage network connected to a native browser extension background helper. Features cross-user permissions gateways backed by SignalR Hubs (`SyncHub` / `ChatHub`) for instantaneous visual UI reload commands without viewport focus disruption.
 *   **Custom Interceptor Matrix:** Leverages custom `HasConversion` serialization type-converters inside Entity Framework Core to write primitive array types (`List<int>`) into an isolated SQLite footprint, providing a clean migration track to production PostgreSQL network server clusters.
