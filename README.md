@@ -2,8 +2,8 @@
 
 Welcome to my full-stack engineering and enterprise systems architecture repository. I am a Systems Engineer holding a Bachelor’s Degree in Information Systems from Karlstad University (Handelshögskolan). This repository showcases production-ready multi-tenant web ecosystems, real-time multiplexed communications, automated asynchronous data-ingestion workers, and native enterprise integration frameworks.
 
-[![Portfolio Live](https://shields.io)](#) 
-[![License](https://shields.io)](./LICENSE)
+![Portfolio Status](https://shields.io)
+![License Status](https://shields.io)
 
 ---
 
